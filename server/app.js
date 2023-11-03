@@ -1,6 +1,6 @@
 import express from 'express';
-import superheroInfoData from '../superhero_info.json' assert {type: "json"};
-import superheroPowersData from '../superhero_powers.json' assert {type: "json"};
+import superheroInfoData from '../superhero_info.json';
+import superheroPowersData from '../superhero_powers.json';
 
 const info = superheroInfoData;
 const powers = superheroPowersData;
@@ -24,7 +24,7 @@ function getAllPowersForSuperhero(superheroID) {
 // Item 3: Get all available publisher names
 function getAllPublisherNames() {
     const publishers = [...new Set(info.map((hero) => hero.publisher))];
-    return publishers; // Fixed the missing parenthesis here
+    return publishers;
 }
 
 // Item 4: Get the first n number of matching superhero IDs for a given search pattern matching a given information field
@@ -46,6 +46,9 @@ app.get('/api/superhero/:id', (req, res) => {
         res.status(404).json({ error: 'Superhero not found' });
     }
 });
+
+// Serve static files from the 'public' directory
+app.use(express.static('public'));
 
 // Start the Express server
 app.listen(port, () => {
