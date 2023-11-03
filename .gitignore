@@ -1,2 +1,3 @@
-superhero_info.json
-superhero_powers.json
+*.json
+*.log
+node_modules
