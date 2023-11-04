@@ -1,25 +1,42 @@
-import express from 'express';
-import superheroInfoData from '../superhero_info.json';
-import superheroPowersData from '../superhero_powers.json';
+const express = require('express');
+const path = require('path');
+const cors = require('cors');
+
+const superheroInfoData = require('../superhero_info.json');
+const superheroPowersData = require('../superhero_powers.json');
 
 const info = superheroInfoData;
 const powers = superheroPowersData;
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3002;
+
+// Enable CORS for all routes
+app.use(cors());
+
+// Serve static files from the 'client' directory
+app.use(express.static(path.join(__dirname, '../client')));
 
 // Item 2: Get all the powers for a given superhero ID
-function getAllPowersForSuperhero(superheroID) {
-    const superhero = info.find((hero) => hero.id === superheroID);
-    if (superhero) {
-        const superheroPowers = powers.filter((power) => power.superhero_id === superheroID);
-        return {
-            superhero: superhero,
-            powers: superheroPowers,
-        };
+app.get('/api/superhero/powers/:id', (req, res) => {
+    const superheroID = parseInt(req.params.id);
+
+    // Check if the superhero ID is valid
+    if (superheroID <= 0 || superheroID > powers.length) {
+        return res.status(404).json({ error: 'Superhero not found' });
     }
-    return null; // Superhero not found
-}
+
+    const superheroPowers = powers[superheroID - 1]; // Adjust for 0-based index
+
+    if (!superheroPowers) {
+        return res.status(404).json({ error: 'Powers for the superhero not found' });
+    }
+
+    // Remove the 'hero_names' property from the powers object
+    delete superheroPowers.hero_names;
+
+    res.json(superheroPowers);
+});
 
 // Item 3: Get all available publisher names
 function getAllPublisherNames() {
@@ -46,9 +63,6 @@ app.get('/api/superhero/:id', (req, res) => {
         res.status(404).json({ error: 'Superhero not found' });
     }
 });
-
-// Serve static files from the 'public' directory
-app.use(express.static('public'));
 
 // Start the Express server
 app.listen(port, () => {
