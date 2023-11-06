@@ -98,13 +98,10 @@ app.post('/api/createList', (req, res) => {
         return res.status(400).json({ error: 'List with the same name already exists.' });
     }
 
-    // Assuming you have an array of superhero IDs to include in the list
-    const superheroIDs = [1, 2, 3]; // Replace with the actual IDs
-
-    // Create a new list object with a name and superhero IDs
+    // Create a new list object with a name and an empty array of superhero IDs
     const newList = {
         name,
-        superheroes: superheroIDs,
+        superheroes: [], // Create an empty array
     };
 
     // Add the new list to the createdLists array
@@ -112,6 +109,7 @@ app.post('/api/createList', (req, res) => {
 
     res.json({ message: 'List created successfully.', lists: createdLists });
 });
+
 
 //Item 6: Save a list of superhero IDs to a given list name. Return an error if the list name does not exist. Replace existing superhero IDs with new values if the list exists.
 // Save a list of superhero IDs to a given list name
