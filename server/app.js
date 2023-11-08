@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
+const fs = require('fs');
 
 const superheroInfoData = require('../superhero_info.json');
 const superheroPowersData = require('../superhero_powers.json');
@@ -8,11 +9,8 @@ const superheroPowersData = require('../superhero_powers.json');
 const info = superheroInfoData;
 const powers = superheroPowersData;
 
-// Initialize an empty array to store created lists
-const createdLists = [];
-
 const app = express();
-const port = process.env.PORT || 3002;
+const port = process.env.PORT || 3000;
 
 // Enable CORS for all routes
 app.use(cors());
@@ -20,10 +18,24 @@ app.use(cors());
 // Serve static files from the 'client' directory
 app.use(express.static(path.join(__dirname, '../client')));
 
+// Initialize an empty array to store created lists
+let createdLists = [];
+
+// Load lists from lists.json or create it if it doesn't exist
+const listsFilePath = path.join(__dirname, 'lists.json');
+
+if (fs.existsSync(listsFilePath)) {
+    const listsData = fs.readFileSync(listsFilePath, 'utf-8');
+    createdLists = JSON.parse(listsData);
+} else {
+    fs.writeFileSync(listsFilePath, '[]', 'utf-8');
+}
+
 // Item 1: Get all the superhero information for a given superhero ID
 app.get('/api/superhero/:id', (req, res) => {
     const superheroID = parseInt(req.params.id);
-    const superhero = info.find((hero) => hero.id === superheroID);
+    const superhero = superheroInfoData.find((hero) => hero.id === superheroID);
+
     if (superhero) {
         res.json(superhero);
     } else {
@@ -61,7 +73,7 @@ app.get('/api/publishers', (req, res) => {
     res.json(publisherNames);
 });
 
-// Item 4: Get the first n number of matching superhero IDs for a given search pattern matching a given information field
+// Item 4: Get the first n number of matching superhero IDs for a given search pattern matching a given information field (name, race, or publisher)
 app.get('/api/search', (req, res) => {
     const { field, pattern, n } = req.query;
 
@@ -69,68 +81,112 @@ app.get('/api/search', (req, res) => {
         return res.status(400).json({ error: 'Both field and pattern are required parameters.' });
     }
 
-    const matchingSuperheroes = superheroInfoData.filter(superhero => {
-        const fieldValue = superhero[field] || '';
+    // Create a variable to store the field name to search
+    let searchField;
+
+    // Check the value of 'field' and set the corresponding search field
+    if (field === 'name') {
+        searchField = 'name';
+    } else if (field === 'race') {
+        searchField = 'Race';
+    } else if (field === 'publisher') {
+        searchField = 'Publisher';
+    } else {
+        return res.status(400).json({ error: 'Invalid field value.' });
+    }
+
+    const matchingSuperheroes = superheroInfoData.filter((superhero) => {
+        const fieldValue = superhero[searchField] || '';
         return fieldValue.toLowerCase().includes(pattern.toLowerCase());
     });
 
-    const matchedIDs = matchingSuperheroes.map(superhero => superhero.id);
-
     if (n) {
-        const limitedIDs = matchedIDs.slice(0, parseInt(n, 10));
-        res.json(limitedIDs);
+        const limitedSuperheroes = matchingSuperheroes.slice(0, parseInt(n, 10));
+        res.json(limitedSuperheroes);
     } else {
-        res.json(matchedIDs);
+        res.json(matchingSuperheroes);
     }
 });
 
 // Item 5: Create a new list to save a list of superheroes with a given list name. Return an error if the name exists.
 // Create a new list with a given name
 app.post('/api/createList', express.json(), (req, res) => {
-    const { name } = req.body;  // Use req.body to access the data
+    const { name } = req.body;
 
     if (!name) {
         return res.status(400).json({ error: 'Name is required for creating a list.' });
     }
 
-    // Check if the list name already exists
-    if (createdLists.some(list => list.name === name)) {
+    if (createdLists.some((list) => list.name === name)) {
         return res.status(400).json({ error: 'List with the same name already exists.' });
     }
 
-    // Create a new list object with a name and an empty array of superhero IDs
     const newList = {
         name,
-        superheroes: [], // Create an empty array
+        superheroes: [],
     };
 
-    // Add the new list to the createdLists array
     createdLists.push(newList);
 
-    res.status(200).json({ message: 'List created successfully.', lists: createdLists });
+    // Save the updated lists to lists.json
+    fs.writeFile('lists.json', JSON.stringify(createdLists), 'utf-8', (err) => {
+        if (err) {
+            console.error('Error saving lists:', err);
+            return res.status(500).json({ error: 'Failed to save the list.' });
+        }
+        res.status(200).json({ message: 'List created successfully.', lists: createdLists });
+    });
+
+    // Save the updated lists to lists.json
+    saveListsToFile();
 });
 
-//Item 6: Save a list of superhero IDs to a given list name. Return an error if the list name does not exist. Replace existing superhero IDs with new values if the list exists.
-// Save a list of superhero IDs to a given list name
+// New route to get the lists
+app.get('/api/lists', (req, res) => {
+    res.json(createdLists);
+});
+
+// Item 6: Save a list of superhero IDs to a given list name.
 app.put('/api/saveList', express.json(), (req, res) => {
     const { name, superheroIDs } = req.body;
 
     if (!name || !superheroIDs) {
-        return res.status(400).json({ error: 'Both name and superheroIDs are required for saving a list.' });
+        return res.status(400).json({ error: 'Both list name and superhero IDs are required for saving a list.' });
     }
 
-    // Find the list by name
+    // Check if the list name exists in the 'lists.json' file
     const existingList = createdLists.find((list) => list.name === name);
 
     if (!existingList) {
         return res.status(404).json({ error: 'List with the specified name does not exist.' });
     }
 
-    // Update the superhero IDs in the existing list
-    existingList.superheroes = superheroIDs; // Replace existing IDs with new values
+    // Parse the superhero IDs input as a comma-separated string and split into an array
+    const superheroIDsArray = superheroIDs.split(',').map((id) => parseInt(id.trim(), 10));
 
-    res.json({ message: 'List updated successfully.' });
+    // Update the superhero IDs in the existing list
+    existingList.superheroes = superheroIDsArray;
+
+    // Save the updated lists to 'lists.json'
+    saveListsToFile();
+
+    // Notify the client that the list was successfully updated
+    res.json({ message: 'List updated successfully.', lists: createdLists });
+
+    // Check if the list name exists and show an alert if it does
+    if (existingList) {
+        alert(`The list name "${name}" exists.`);
+    }
 });
+
+// Save the updated lists to lists.json
+function saveListsToFile() {
+    fs.writeFile(listsFilePath, JSON.stringify(createdLists, null, 4), 'utf-8', (err) => {
+        if (err) {
+            console.error('Error saving lists:', err);
+        }
+    });
+}
 
 // Item 7: Get the list of superhero IDs for a given list
 // Get the list of superhero IDs for a given list
@@ -172,6 +228,9 @@ app.delete('/api/deleteList', express.json(), (req, res) => {
     createdLists.splice(listIndex, 1);
 
     res.json({ message: 'List deleted successfully.' });
+
+    // Save the updated lists to lists.json
+    saveListsToFile();
 });
 
 // Item 9: Get a list of names, information and powers of all superheroes saved in a given list

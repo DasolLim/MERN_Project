@@ -1,88 +1,71 @@
-// Function to match superheroes based on search criteria
-function match(field, pattern) {
-    let url = `/api/search?field=${encodeURIComponent(field)}&pattern=${encodeURIComponent(pattern)}`;
+const searchForm = document.getElementById('search-form');
+const searchInput = document.getElementById('search-input');
+const searchType = document.getElementById('search-type');
+const searchResults = document.getElementById('search-results');
 
-    fetch(url)
-        .then((response) => {
-            if (response.ok) {
-                return response.json();
-            } else {
-                throw new Error('Search failed.');
-            }
-        })
-        .then((data) => {
-            // Display the search results
-            displaySearchResults(data);
-        })
-        .catch((error) => {
-            console.error(error);
-            searchResults.textContent = 'Error: ' + error.message;
-        });
+// Assuming your JSON data is stored in a variable called 'superheroData'
+// You can replace this with your actual data retrieval method
+
+// Update your event listener for the search form
+searchForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const searchTerm = searchInput.value;
+    const searchCategory = searchType.value;
+
+    // Implement asynchronous functionality to query the back-end and display search results
+    const response = await fetch(`/api/search?field=${searchCategory}&pattern=${searchTerm}`);
+    const data = await response.json();
+
+    // Display search results based on the selected search category
+    displaySearchResults(data, searchCategory, searchTerm);
+});
+
+// Helper function to display search results
+function displaySearchResults(results, searchCategory, searchTerm) {
+    searchResults.innerHTML = ''; // Clear previous results
+
+    results.forEach((superhero) => {
+        // Check if the search term matches the category or its corresponding attribute
+        if (searchCategory === 'name' && superhero.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+            // Create a container for each superhero's details
+            const superheroContainer = createSuperheroContainer(superhero);
+            searchResults.appendChild(superheroContainer);
+        } else if (searchCategory === 'race' && superhero.Race.toLowerCase().includes(searchTerm.toLowerCase())) {
+            const superheroContainer = createSuperheroContainer(superhero);
+            searchResults.appendChild(superheroContainer);
+        } else if (searchCategory === 'publisher' && superhero.Publisher.toLowerCase().includes(searchTerm.toLowerCase())) {
+            const superheroContainer = createSuperheroContainer(superhero);
+            searchResults.appendChild(superheroContainer);
+        }
+    });
 }
 
-// Function to display search results
-function displaySearchResults(results) {
-    searchResults.innerHTML = '';
+// Helper function to create a container for superhero details
+function createSuperheroContainer(superhero) {
+    const superheroContainer = document.createElement('div');
+    superheroContainer.className = 'superhero-container';
 
-    if (results.length > 0) {
-        searchResults.innerHTML = '<h3>Search Results:</h3>';
-        results.forEach((result) => {
-            const resultElement = document.createElement('p');
-            resultElement.textContent = `ID: ${result.id}, Name: ${result.name}`;
-            searchResults.appendChild(resultElement);
-        });
-    } else {
-        searchResults.innerHTML = 'No matches found.';
+    // Create a div for each attribute and add it to the container
+    for (const key in superhero) {
+        const attributeElement = document.createElement('div');
+        attributeElement.className = 'attribute';
+        attributeElement.innerHTML = `<strong>${key}:</strong> ${superhero[key]}`;
+        superheroContainer.appendChild(attributeElement);
     }
+
+    return superheroContainer;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     const createListForm = document.getElementById('createListForm');
     const listNameInput = document.getElementById('listNameInput');
-    const listError = document.getElementById('listError');
     const listsDropdownForSave = document.getElementById('listsDropdownForSave');
     const saveListForm = document.getElementById('saveListForm');
     const saveListInput = document.getElementById('superheroIDsInput');
     const saveListNameInput = document.getElementById('listNameInput'); // Add this line
     const saveListError = document.getElementById('saveListError');
-    const superheroInfoForm = document.getElementById('superheroInfoForm'); // Changed variable name
 
-    // Event listener for searching superheroes
-    superheroInfoForm.addEventListener('submit', (event) => { // Changed event listener target
-        event.preventDefault();
-        const searchField = document.getElementById('searchField').value;
-        const searchPattern = document.getElementById('searchPattern').value;
-        const searchNumber = document.getElementById('searchNumber').value;
-
-        match(searchField, searchPattern, searchNumber);
-    });
-
-    // // Function to match superheroes based on search criteria
-    // function match(field, pattern, number) {
-    //     let url = `/api/search?field=${field}&pattern=${pattern}`;
-    //     if (number) {
-    //         url += `&n=${number}`;
-    //     } else {
-    //         url += `&n=all`;
-    //     }
-
-    //     fetch(url)
-    //         .then((response) => {
-    //             if (response.ok) {
-    //                 return response.json();
-    //             } else {
-    //                 throw new Error('Search failed.');
-    //             }
-    //         })
-    //         .then((data) => {
-    //             // Display the search results
-    //             displaySearchResults(data);
-    //         })
-    //         .catch((error) => {
-    //             console.error(error);
-    //             searchResults.textContent = 'Error: ' + error.message;
-    //         });
-    // }
+    updateListsDropdownForSaveOptions();
 
     function displaySaveListError(errorMessage) {
         const saveListError = document.getElementById('saveListError');
@@ -105,93 +88,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Add an event listener for fetching superhero IDs for the selected list
-    const fetchSuperheroIDsButton = document.getElementById('fetchSuperheroIDsButton');
-    fetchSuperheroIDsButton.addEventListener('click', async () => {
-        const selectedList = listsDropdownForGetSuperheroIDs.value;
+    function displaySaveListError(errorMessage) {
+        saveListError.textContent = errorMessage;
+    }
 
-        if (!selectedList) {
-            // Handle case when no list is selected
-            console.log('Please select a list.');
-            return;
-        }
-
-        // Make an API request to get superhero IDs for the selected list
-        try {
-            const response = await fetch(`/api/getList?name=${selectedList}`);
-
-            if (response.ok) {
-                const data = await response.json();
-                displaySuperheroIDs(data.superheroIDs);
-            } else if (response.status === 400) {
-                // Handle validation errors
-                const errorData = await response.json();
-                displaySuperheroIDsError(errorData.error);
-            } else if (response.status === 404) {
-                // List with the specified name does not exist
-                const errorData = await response.json();
-                displaySuperheroIDsError(errorData.error);
-            } else {
-                // Handle other errors
-                displaySuperheroIDsError('Failed to get the superhero IDs for the list.');
-            }
-        } catch (error) {
-            console.error('Error in fetchSuperheroIDsButton:', error);
-            displaySuperheroIDsError('An error occurred.');
-        }
-    });
-
-    // Function to display superhero IDs
-    const displaySuperheroIDs = (superheroIDs) => {
-        const superheroIDsContainer = document.getElementById('superheroIDsContainer');
-
-        if (superheroIDs.length > 0) {
-            superheroIDsContainer.innerHTML = `<h3>Superhero IDs for the Selected List:</h3><ul>${superheroIDs.map(id => `<li>${id}</li>`).join('')}</ul>`;
-        } else {
-            superheroIDsContainer.innerHTML = 'No superhero IDs found for the selected list.';
-        }
-    };
-
-    // Function to display superhero IDs error
-    const displaySuperheroIDsError = (errorMessage) => {
-        const superheroIDsContainer = document.getElementById('superheroIDsContainer');
-        superheroIDsContainer.textContent = 'Error: ' + errorMessage;
-    };
-
-
-    // Function to get and display all available publisher names
-    const getAllPublishers = () => {
-        fetch('/api/publishers')
-            .then((response) => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error('Failed to fetch publishers.');
-                }
-            })
+    // Add this code to update the listsDropdownForSave when a new list is created
+    function updateListsDropdownForSaveOptions() {
+        const listsDropdownForSave = document.getElementById('listsDropdownForSave');
+        fetch('/api/lists')
+            .then((response) => response.json())
             .then((data) => {
-                displayPublishers(data);
+                listsDropdownForSave.innerHTML = ''; // Clear existing options
+                data.forEach((list) => {
+                    const option = document.createElement('option');
+                    option.value = list.name;
+                    option.textContent = list.name;
+                    listsDropdownForSave.appendChild(option);
+                });
             })
             .catch((error) => {
-                console.error(error); // Check for any error messages in the console
-                // Handle the error, e.g., display an error message on the page
+                console.error('Error updating listsDropdownForSave:', error);
             });
-    };
+    }
 
-    // Function to display publisher names on the page
-    const displayPublishers = (publishers) => {
-        const publishersContainer = document.getElementById('publishersContainer');
-
-        if (publishers.length > 0) {
-            publishersContainer.innerHTML = `<h3>Publisher Names:</h3><ul>${publishers.map(publisher => `<li>${publisher}</li>`).join('')}</ul>`;
-        } else {
-            publishersContainer.innerHTML = 'No publishers found.';
-        }
-    };
-
+    // Event listener for creating a new list
     createListForm.addEventListener('submit', function (e) {
         e.preventDefault();
-
         const listName = listNameInput.value;
 
         if (!listName) {
@@ -199,6 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Send a request to create a new list
         fetch('/api/createList', {
             method: 'POST',
             headers: {
@@ -220,6 +143,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert(data.error);
                 } else {
                     alert('List created successfully');
+                    listNameInput.value = ''; // Clear the input field
+                    updateListsDropdownForSaveOptions(); // Update the dropdown
                 }
             })
             .catch((error) => {
@@ -227,53 +152,33 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     });
 
-    // Function to display list creation error
-    function displayListError(errorMessage) {
-        listError.textContent = errorMessage;
-    }
-
-    // Function to clear list creation error
-    function clearListError() {
-        listError.textContent = '';
-    }
-
-    // Function to update the lists dropdown
-    const updateListsDropdown = (lists) => {
-        listsDropdownForSave.innerHTML = ''; // Use listsDropdownForSave
-        lists.forEach((list) => {
-            const option = document.createElement('option');
-            option.value = list.name;
-            option.textContent = list.name;
-            listsDropdownForSave.appendChild(option); // Use listsDropdownForSave
-        });
-    }
-
     // Event listener for saving a list of superhero IDs
     saveListForm.addEventListener('submit', async (event) => {
         event.preventDefault();
-        const listName = saveListNameInput.value;
+        const listName = listsDropdownForSave.value;
         const superheroIDs = saveListInput.value;
 
         // Validate the input
         if (!listName || !superheroIDs) {
-            displaySaveListError("Both list name and superhero IDs are required.");
+            displaySaveListError('Both list name and superhero IDs are required.');
             return;
         }
 
         // Send a request to save the list
         try {
-            const response = await fetch(`/api/saveList`, {
+            const response = await fetch('/api/saveList', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ name: listName, superheroIDs: superheroIDs }),
+                body: JSON.stringify({ name: listName, superheroIDs }),
             });
 
             if (response.ok) {
                 // List saved successfully
                 const data = await response.json();
-                updateListsDropdown(data.lists);
+                updateListsDropdownForSave(data.lists); // Update the lists dropdown for saving
+                updateListsDropdownForGetSuperheroIDs(listName); // Update the lists dropdown for getting superhero IDs
                 saveListNameInput.value = ''; // Clear the input field
                 saveListInput.value = ''; // Clear the input field
             } else if (response.status === 400) {
@@ -294,166 +199,166 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Function to display save list error
-    function displaySaveListError(errorMessage) {
-        saveListError.textContent = errorMessage;
-    }
+    // New code for managing favorite lists
+    const listsDropdownForGetInfo = document.getElementById('listsDropdownForGetInfo');
+    const displayListInfoButton = document.getElementById('displayListInfoButton');
+    const listInfoContainer = document.getElementById('listInfoContainer');
 
-    const searchButton = document.getElementById('searchButton');
-    const searchResults = document.getElementById('searchResults');
+    // Function to update the lists dropdown for saving
+    const updateListsDropdownForSave = (lists) => {
+        listsDropdownForSave.innerHTML = ''; // Clear the existing options
 
-    // Event listener for searching superheroes
-    searchButton.addEventListener('click', () => {
-        const searchField = document.getElementById('searchField').value;
-        const searchPattern = document.getElementById('searchPattern').value;
-        const searchNumber = document.getElementById('searchNumber').value;
+        // Create an option for each list and add it to the dropdown
+        lists.forEach((list) => {
+            const option = document.createElement('option');
+            option.value = list.name;
+            option.textContent = list.name;
+            listsDropdownForSave.appendChild(option);
+        });
+    };
 
-        match(searchField, searchPattern, searchNumber);
-    });
+    // Fetch the lists from the server and populate the dropdown
+    fetch('/api/lists')
+        .then((response) => response.json())
+        .then((data) => {
+            updateListsDropdownForSave(data);
+        })
+        .catch((error) => {
+            console.error('Error fetching lists:', error);
+        });
 
-    // Function to match superheroes based on search criteria
-    function match(field, pattern, number) {
-        let url = `/api/search?field=${field}&pattern=${pattern}`;
-
-        if (number) {
-            url += `&n=${number}`;
-        } else {
-            url += `&n=all`;
-        }
-
-        fetch(url)
-            .then((response) => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error('Search failed.');
-                }
-            })
-            .then((data) => {
-                // Display the search results
-                displaySearchResults(data);
-            })
-            .catch((error) => {
-                console.error(error);
-                searchResults.textContent = 'Error: ' + error.message;
-            });
-    }
-
-    function displaySearchResults(results) {
-        searchResults.innerHTML = '';
-
-        if (results.length > 0) {
-            searchResults.innerHTML = '<h3>Search Results:</h3>';
-
-            // Check if there's a limit on the number of results to display
-            const limit = parseInt(document.getElementById('searchNumber').value);
-
-            results.slice(0, limit).forEach((result) => {
-                const resultElement = document.createElement('p');
-                resultElement.textContent = `ID: ${result}`;
-                searchResults.appendChild(resultElement);
-            });
-        } else {
-            searchResults.innerHTML = 'No matches found.';
-        }
-    }
-
-    const searchSuperheroes = async (searchField, pattern, n) => {
-        try {
-            // Construct the URL with query parameters
-            const url = `/api/search?field=${searchField}&pattern=${pattern}&n=${n}`;
-            const response = await fetch(url);
-
-            if (response.ok) {
-                const data = await response.json();
-                displaySearchResults(data);
-            } else {
-                console.error('Search request failed.');
-            }
-        } catch (error) {
-            console.error('Error in searchSuperheroes:', error);
+    // Function to update the lists dropdown for getting superhero IDs
+    const updateListsDropdownForGetSuperheroIDs = (listName) => {
+        // Check if the listName already exists in the dropdown
+        if (![...listsDropdownForGetSuperheroIDs.options].some((option) => option.value === listName)) {
+            const option = document.createElement('option');
+            option.value = listName;
+            option.textContent = listName;
+            listsDropdownForGetSuperheroIDs.appendChild(option);
         }
     };
 
-    // Event listener for a button click to fetch and display publisher names
-    const fetchPublishersButton = document.getElementById('fetchPublishersButton');
-    fetchPublishersButton.addEventListener('click', () => {
-        getAllPublishers();
-    });
+    // Function to display information and powers of superheroes in a list
+    const displayListInformation = (listName) => {
+        fetch(`/api/getListInfo?name=${listName}`)
+            .then((response) => response.json())
+            .then((data) => {
+                listInfoContainer.innerHTML = '';
+                data.forEach((superhero) => {
+                    const superheroContainer = createSuperheroContainer(superhero);
+                    listInfoContainer.appendChild(superheroContainer);
+                });
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    };
 
-    // Add an event listener for fetching powers
-    fetchPowersForm.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const superheroID = superheroIDForPowers.value;
-        if (superheroID) {
-            fetch(`/api/superhero/powers/${superheroID}`)
+    // Event listener for Get Superhero IDs button
+    document.getElementById('fetchSuperheroIDsButton').addEventListener('click', () => {
+        const selectedList = document.getElementById('listsDropdownForGetSuperheroIDs').value;
+
+        if (selectedList) {
+            // Send a request to get the superhero IDs for the selected list
+            fetch(`/api/getList?name=${selectedList}`)
                 .then((response) => {
-                    if (response.status === 200) {
+                    if (response.ok) {
                         return response.json();
-                    } else if (response.status === 404) {
-                        powersContainer.textContent = 'Powers not found for the superhero.';
                     } else {
-                        throw new Error('Failed to fetch powers.');
+                        throw new Error('Failed to get superhero IDs for the selected list.');
                     }
                 })
                 .then((data) => {
-                    // Display the powers
-                    const powersList = Object.entries(data).filter(([key, value]) => value === "True").map(([key, value]) => key);
-                    if (powersList.length > 0) {
-                        powersContainer.textContent = `Powers: ${powersList.join(', ')}`;
-                    } else {
-                        powersContainer.textContent = 'No superpowers for this superhero.';
-                    }
+                    // Display the superhero IDs on the webpage
+                    const superheroIDsContainer = document.getElementById('superheroIDsContainer');
+                    superheroIDsContainer.innerHTML = JSON.stringify(data.superheroIDs);
                 })
                 .catch((error) => {
-                    console.error('Error in fetchPowersForm:', error);
+                    console.error('Error:', error);
+                    // Handle errors, e.g., display an error message
                 });
         }
     });
 
-    // Event listener for fetching superhero information
-    superheroInfoForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const id = superheroIDInput.value;
-        if (!id) {
-            superheroInfo.textContent = 'Please enter a superhero ID.';
-        } else {
-            try {
-                const response = await fetch(`/api/superhero/${id}`);
-                if (response.ok) {
-                    const superhero = await response.json();
-                    displaySuperheroInfo(superhero);
-                } else if (response.status === 404) {
-                    superheroInfo.textContent = 'Superhero not found.';
-                } else {
-                    superheroInfo.textContent = 'Error fetching superhero information.';
-                }
-            } catch (error) {
-                console.error('Error in fetching superhero information:', error);
-                superheroInfo.textContent = 'An error occurred.';
+    // Add an event listener for the "Get Superhero IDs" button
+    const fetchSuperheroIDsButton = document.getElementById('fetchSuperheroIDsButton');
+    fetchSuperheroIDsButton.addEventListener('click', async () => {
+        const selectedListName = document.getElementById('listsDropdownForGetSuperheroIDs').value;
+        if (!selectedListName) {
+            alert('Please select a list first.');
+            return;
+        }
+
+        // Fetch the superhero IDs from the selected list
+        try {
+            const response = await fetch(`/api/getList?name=${selectedListName}`);
+            if (response.ok) {
+                const data = await response.json();
+                const superheroIDs = data.superheroIDs;
+
+                // Fetch superhero information one by one for the retrieved IDs
+                fetchSuperheroInformationSequentially(superheroIDs);
+            } else {
+                console.error('Error fetching list:', response.statusText);
             }
+        } catch (error) {
+            console.error('Error in fetchSuperheroIDsButton:', error);
         }
     });
 
+    // Function to fetch superhero information one by one
+    async function fetchSuperheroInformationSequentially(superheroIDs) {
+        const superheroInfo = [];
+
+        for (const superheroID of superheroIDs) {
+            try {
+                const response = await fetch(`/api/superhero/${superheroID}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    superheroInfo.push(data);
+                } else {
+                    console.error(`Error fetching superhero information for ID ${superheroID}:`, response.statusText);
+                }
+            } catch (error) {
+                console.error(`Error in fetchSuperheroInformationSequentially for ID ${superheroID}:`, error);
+            }
+        }
+
+        // Display the superhero information
+        displaySuperheroInformation(superheroInfo);
+    }
+
     // Function to display superhero information
-    const displaySuperheroInfo = (superhero) => {
-        superheroInfo.textContent = `Name: ${superhero.name}, Race: ${superhero.race}, Publisher: ${superhero.publisher}, Power: ${superhero.power}`;
+    function displaySuperheroInformation(superheroInfo) {
+        const superheroIDsContainer = document.getElementById('superheroIDsContainer');
+        superheroIDsContainer.innerHTML = '';
+
+        superheroInfo.forEach((superhero) => {
+            const superheroContainer = createSuperheroContainer(superhero);
+            superheroIDsContainer.appendChild(superheroContainer);
+        });
+    }
+
+    // Function to create a container for superhero details
+    function createSuperheroContainer(superhero) {
+        const superheroContainer = document.createElement('div');
+        superheroContainer.className = 'superhero-container';
+
+        // Create a div for each attribute and add it to the container
+        for (const key in superhero) {
+            const attributeElement = document.createElement('div');
+            attributeElement.className = 'attribute';
+            attributeElement.innerHTML = `<strong>${key}:</strong> ${superhero[key]}`;
+            superheroContainer.appendChild(attributeElement);
+        }
+
+        return superheroContainer;
     };
 
-    // Function to send a request to create a new favorite list
-    const createFavoriteList = async (listName) => {
-        try {
-            const response = await fetch(`/api/createList?name=${listName}`);
-            if (response.ok) {
-                const data = await response.json();
-                updateListsDropdown(data.lists); // Pass the lists to the function
-            } else {
-                console.error('Create list request failed.');
-            }
-        } catch (error) {
-            console.error('Error in createFavoriteList:', error);
-        }
-    };
+    // Function to display save list error
+    function displaySaveListError(errorMessage) {
+        saveListError.textContent = errorMessage;
+    }
 
     // Function to send a request to retrieve and display a favorite list
     const displayFavoriteList = async (listName) => {
@@ -486,13 +391,6 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault();
         const searchField = searchInput.value;
         searchSuperheroes(searchField, searchInput.value);
-    });
-
-    // Event listener for creating a favorite list
-    createListForm.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const listName = listNameInput.value;
-        createFavoriteList(listName);
     });
 
     // Event listener for displaying a favorite list

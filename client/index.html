@@ -9,36 +9,22 @@
 <body>
     <div class="container">
         <h1>Superhero Information</h1>
-        
-        <!-- Form to Enter Superhero ID -->
-        <form id="superheroInfoForm" class="form">
-            <input type="number" id="superheroIDInput" placeholder="Enter Superhero ID">
-            <button type="submit">Fetch Information</button>
+
+        <!-- Search Form -->
+        <form id="search-form">
+        <input type="text" id="search-input" placeholder="Search...">
+        <select id="search-type">
+            <option value="name">Name</option>
+            <option value="race">Race</option>
+            <option value="publisher">Publisher</option>
+            <option value="power">Power</option>
+        </select>
+        <button type="submit">Search</button>
         </form>
 
-        <!-- Display Superhero Information -->
-        <div id="superheroInfo" class="result"></div>
-        
-        <!-- Form to Enter Superhero ID for Powers -->
-        <form id="fetchPowersForm" class="form">
-            <input type="number" id="superheroIDForPowers" placeholder="Enter Superhero ID">
-            <button type="submit">Fetch Powers</button>
-        </form>
-        
-        <!-- Display Superhero Powers -->
-        <div id="powersContainer" class="result"></div>
-
-        <!-- Add this button and container in your HTML -->
-        <button id="fetchPublishersButton">Fetch Publishers</button>
-        
-        <div id="publishersContainer" class="result"></div>
-
-        <input type="text" id="searchField" placeholder="Enter Name, Race, Publisher, or Power">
-        <input type="text" id="searchPattern" placeholder="Enter Search Pattern">
-        <input type="number" id="searchNumber" placeholder="Enter Number (optional)">
-        <button id="searchButton">Search</button>
-        
-        <div id="searchResults" class="result"></div>        
+        <div id="search-results">
+            <!-- Display search results here -->
+        </div>
         
         <!-- Create Favorite List Form -->
         <form id="createListForm" class="form">
@@ -51,15 +37,16 @@
 
         <!-- Add this inside the <div class="container"> -->
         <!-- Form to Save Superhero IDs to a List -->
+        <!-- Form to Save Superhero IDs to a List -->
         <form id="saveListForm" class="form">
             <select id="listsDropdownForSave" required>
                 <option value="" disabled>Select a List</option>
                 <!-- Add dynamically populated options for lists here -->
             </select>
             <input type="text" id="superheroIDsInput" placeholder="Enter Superhero IDs (comma-separated)" required>
-            <button type="submit">Save List</button>
-        </form>       
-
+            <button type="submit" id="saveListButton">Save List</button>
+        </form>
+   
         <!-- Add this select element to choose a list -->
         <select id="listsDropdownForGetSuperheroIDs" required>
             <option value="" disabled>Select a List</option>
@@ -72,17 +59,6 @@
         <div id="superheroIDsContainer" class="result"></div>
 
         <div id="saveListError" class="error"></div>
-
-        <!-- Sort Dropdown (Add options for sorting) -->
-        <div class="dropdown-container">
-            <select id="sortDropdown">
-                <option value="">Sort By</option>
-                <option value="name">Name</option>
-                <option value="race">Race</option>
-                <option value="publisher">Publisher</option>
-                <option value="power">Power</option>
-            </select>
-        </div>
         
     </div>
     <script src="script.js"></script>
