@@ -6,14 +6,17 @@ const searchResults = document.getElementById('search-results');
 // Assuming your JSON data is stored in a variable called 'superheroData'
 // You can replace this with your actual data retrieval method
 
-// Update your event listener for the search form
+// JavaScript code in your front end (script.js)
 searchForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     const searchTerm = searchInput.value;
     const searchCategory = searchType.value;
 
+    // Encode the search term as UTF-8 before sending it to the back end
+    const searchTermEncoded = encodeURIComponent(searchTerm);
+
     // Implement asynchronous functionality to query the back-end and display search results
-    const response = await fetch(`/api/search?field=${searchCategory}&pattern=${searchTerm}`);
+    const response = await fetch(`/api/search?field=${searchCategory}&pattern=${searchTermEncoded}`);
     const data = await response.json();
 
     // Display search results based on the selected search category
@@ -68,27 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateListsDropdownForSaveOptions();
 
     function displaySaveListError(errorMessage) {
-        const saveListError = document.getElementById('saveListError');
-        if (saveListError) {
-            saveListError.textContent = errorMessage;
-        } else {
-            // Create and append the error element if it doesn't exist
-            const errorElement = document.createElement('div');
-            errorElement.id = 'saveListError';
-            errorElement.className = 'error';
-            errorElement.textContent = errorMessage;
-
-            // Append the error element to a suitable parent element in your HTML structure
-            const parentElement = document.querySelector('.container'); // Adjust this selector as needed
-            if (parentElement) {
-                parentElement.appendChild(errorElement);
-            } else {
-                console.error("Element with ID 'saveListError' not found, and a suitable parent element is missing.");
-            }
-        }
-    }
-
-    function displaySaveListError(errorMessage) {
         saveListError.textContent = errorMessage;
     }
 
@@ -112,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Event listener for creating a new list
-    createListForm.addEventListener('submit', function (e) {
+    createListForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const listName = listNameInput.value;
 
@@ -121,35 +103,28 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Send a request to create a new list
-        fetch('/api/createList', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ name: listName }),
-        })
-            .then((response) => {
-                if (response.status === 400) {
-                    return response.json();
-                } else if (response.status === 200) {
-                    return response.json();
-                } else {
-                    throw new Error('Unexpected response from the server');
-                }
-            })
-            .then((data) => {
-                if (data.error) {
-                    alert(data.error);
-                } else {
-                    alert('List created successfully');
-                    listNameInput.value = ''; // Clear the input field
-                    updateListsDropdownForSaveOptions(); // Update the dropdown
-                }
-            })
-            .catch((error) => {
-                console.error('Error:', error);
+        try {
+            const response = await fetch('/api/createList', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: listName }),
             });
+
+            if (response.ok) {
+                const data = await response.json();
+                alert('List created successfully');
+                listNameInput.value = ''; // Clear the input field
+                updateListsDropdownForSaveOptions(); // Update the dropdown
+            } else {
+                const errorData = await response.json();
+                displaySaveListError(errorData.error);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            displaySaveListError('An error occurred.');
+        }
     });
 
     // Event listener for saving a list of superhero IDs
@@ -355,11 +330,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return superheroContainer;
     };
 
-    // Function to display save list error
-    function displaySaveListError(errorMessage) {
-        saveListError.textContent = errorMessage;
-    }
-
     // Function to send a request to retrieve and display a favorite list
     const displayFavoriteList = async (listName) => {
         try {
@@ -399,9 +369,39 @@ document.addEventListener('DOMContentLoaded', () => {
         displayFavoriteList(listName);
     });
 
-    // Event listener for sorting
-    sortDropdown.addEventListener('change', () => {
-        const field = sortDropdown.value;
-        // Call a sorting function here using field (name, race, publisher, power)
+    // Get references to the sorting elements
+    const sortSelect = document.getElementById('sort-select');
+    const sortButton = document.getElementById('sort-button');
+
+    // Event listener for the sort button
+    sortButton.addEventListener('click', () => {
+        const selectedAttribute = sortSelect.value;
+        sortSuperheroes(selectedAttribute);
     });
+
+    // Function to sort and display superheroes based on the selected attribute
+    function sortSuperheroes(attribute) {
+        const superheroContainers = Array.from(document.querySelectorAll('.superhero-container'));
+
+        superheroContainers.sort((a, b) => {
+            const nameA = a.getAttribute(attribute).toLowerCase();
+            const nameB = b.getAttribute(attribute).toLowerCase();
+
+            if (nameA < nameB) {
+                return -1;
+            }
+            if (nameA > nameB) {
+                return 1;
+            }
+            return 0;
+        });
+
+        const searchResults = document.getElementById('search-results');
+        searchResults.innerHTML = ''; // Clear previous results
+
+        superheroContainers.forEach((container) => {
+            searchResults.appendChild(container);
+        });
+    }
+
 });
