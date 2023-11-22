@@ -69,6 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveListError = document.getElementById('saveListError');
 
     updateListsDropdownForSaveOptions();
+    updateListsDropdown();
 
     function displaySaveListError(errorMessage) {
         saveListError.textContent = errorMessage;
@@ -117,6 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('List created successfully');
                 listNameInput.value = ''; // Clear the input field
                 updateListsDropdownForSaveOptions(); // Update the dropdown
+                updateListsDropdown();
             } else {
                 const errorData = await response.json();
                 displaySaveListError(errorData.error);
@@ -153,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // List saved successfully
                 const data = await response.json();
                 updateListsDropdownForSave(data.lists); // Update the lists dropdown for saving
-                updateListsDropdownForGetSuperheroIDs(listName); // Update the lists dropdown for getting superhero IDs
+                updateListsDropdown(listName); // Update the lists dropdown for getting superhero IDs
                 saveListNameInput.value = ''; // Clear the input field
                 saveListInput.value = ''; // Clear the input field
             } else if (response.status === 400) {
@@ -203,15 +205,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
     // Function to update the lists dropdown for getting superhero IDs
-    const updateListsDropdownForGetSuperheroIDs = (listName) => {
-        // Check if the listName already exists in the dropdown
-        if (![...listsDropdownForGetSuperheroIDs.options].some((option) => option.value === listName)) {
-            const option = document.createElement('option');
-            option.value = listName;
-            option.textContent = listName;
-            listsDropdownForGetSuperheroIDs.appendChild(option);
-        }
-    };
+    // Add this code to update the listsDropdownForSave when a new list is created
+    function updateListsDropdown() {
+        const listsDropdownForSave = document.getElementById('listsDropdownForGetSuperheroIDs');
+        fetch('/api/lists')
+            .then((response) => response.json())
+            .then((data) => {
+                listsDropdownForSave.innerHTML = ''; // Clear existing options
+                data.forEach((list) => {
+                    const option = document.createElement('option');
+                    option.value = list.name;
+                    option.textContent = list.name;
+                    listsDropdownForSave.appendChild(option);
+                });
+            })
+            .catch((error) => {
+                console.error('Error updating listsDropdownForGetSuperheroIDs:', error);
+            });
+    }
+
 
     // Function to display information and powers of superheroes in a list
     const displayListInformation = (listName) => {
@@ -272,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const superheroIDs = data.superheroIDs;
 
                 // Fetch superhero information one by one for the retrieved IDs
-                fetchSuperheroInformationSequentially(superheroIDs);
+                fetchSuperheroInformationSequentially(superheroIDs, sorted = false);
             } else {
                 console.error('Error fetching list:', response.statusText);
             }
@@ -282,9 +294,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Function to fetch superhero information one by one
-    async function fetchSuperheroInformationSequentially(superheroIDs) {
+    async function fetchSuperheroInformationSequentially(superheroIDs, sorted) {
         const superheroInfo = [];
-
         for (const superheroID of superheroIDs) {
             try {
                 const response = await fetch(`/api/superhero/${superheroID}`);
@@ -300,35 +311,101 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Display the superhero information
-        displaySuperheroInformation(superheroInfo);
+        if (sorted) {
+            displaySuperheroInformationSorted(superheroInfo);
+        } else {
+            displaySuperheroInformation(superheroInfo);
+        }
     }
 
     // Function to display superhero information
     function displaySuperheroInformation(superheroInfo) {
         const superheroIDsContainer = document.getElementById('superheroIDsContainer');
         superheroIDsContainer.innerHTML = '';
+        resultList = [];
 
         superheroInfo.forEach((superhero) => {
-            const superheroContainer = createSuperheroContainer(superhero);
+            const superheroContainer = createSuperheroContainer(superhero, criteria = 0);
+            resultList.push(superheroContainer)
             superheroIDsContainer.appendChild(superheroContainer);
         });
     }
 
-    // Function to create a container for superhero details
-    function createSuperheroContainer(superhero) {
-        const superheroContainer = document.createElement('div');
-        superheroContainer.className = 'superhero-container';
+    // Function to display superhero information sorted
+    function displaySuperheroInformationSorted(superheroInfo) {
+        const superheroIDsContainer = document.getElementById('superheroIDsContainer');
+        superheroIDsContainer.innerHTML = '';
+        resultList = [];
+        const sortMethod = document.getElementById("sort-select").value;
+        superheroInfo.forEach((superhero) => {
+            const superheroContainer = createSuperheroContainer(superhero, criteria = sortMethod);
+            resultList.push(superheroContainer);
+        });
+        sortSuperheroes(resultList, sortMethod);
+        resultList.forEach((list) => {
+            superheroIDsContainer.appendChild(list);
+        });
+    }
 
-        // Create a div for each attribute and add it to the container
-        for (const key in superhero) {
-            const attributeElement = document.createElement('div');
-            attributeElement.className = 'attribute';
-            attributeElement.innerHTML = `<strong>${key}:</strong> ${superhero[key]}`;
-            superheroContainer.appendChild(attributeElement);
+    // Add an event listener for the "Sort" button
+    const sortSuperHeroButton = document.getElementById('sort-button');
+    sortSuperHeroButton.addEventListener('click', async () => {
+        const selectedListName = document.getElementById('listsDropdownForGetSuperheroIDs').value;
+        if (!selectedListName) {
+            alert('Please select a list first.');
+            return;
         }
 
-        return superheroContainer;
-    };
+        // Fetch the superhero IDs from the selected list
+        try {
+            const response = await fetch(`/api/getList?name=${selectedListName}`);
+            if (response.ok) {
+                const data = await response.json();
+                const superheroIDs = data.superheroIDs;
+
+                // Fetch superhero information one by one for the retrieved IDs
+                fetchSuperheroInformationSequentially(superheroIDs, sorted = true);
+            } else {
+                console.error('Error fetching list:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error in fetchSuperheroIDsButton:', error);
+        }
+    });
+
+    // Function to create a container for superhero details
+    function createSuperheroContainer(superhero, criteria) {
+
+        if (!criteria) {
+            const superheroContainer = document.createElement('div');
+            superheroContainer.className = 'superhero-container';
+            // Create a div for each attribute and add it to the container
+            for (const key in superhero) {
+                const attributeElement = document.createElement('div');
+                attributeElement.className = 'attribute';
+                attributeElement.innerHTML = `<strong>${key}:</strong> ${superhero[key]}`;
+                superheroContainer.appendChild(attributeElement);
+            }
+            //get superhero id from 'superhero' and find their powers, append powers to 'attributeElement' BEFORE appending element to container
+
+            return superheroContainer;
+        };
+        if (criteria) {
+            const superheroContainer = document.createElement('div');
+            superheroContainer.className = 'superhero-container';
+            superheroContainer.dataset.name = superhero.name;
+            superheroContainer.dataset.Race = superhero.Race;
+            superheroContainer.dataset.Publisher = superhero.Publisher;
+            // Create a div for each attribute and add it to the container
+            for (const key in superhero) {
+                const attributeElement = document.createElement('div');
+                attributeElement.className = 'attribute';
+                attributeElement.innerHTML = `<strong>${key}:</strong> ${superhero[key]}`;
+                superheroContainer.appendChild(attributeElement);
+            }
+            return superheroContainer;
+        }
+    }
 
     // Function to send a request to retrieve and display a favorite list
     const displayFavoriteList = async (listName) => {
@@ -356,52 +433,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // Event listener for searching superheroes
-    searchForm.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const searchField = searchInput.value;
-        searchSuperheroes(searchField, searchInput.value);
-    });
-
-    // Event listener for displaying a favorite list
-    displayListButton.addEventListener('click', () => {
-        const listName = listsDropdown.value;
-        displayFavoriteList(listName);
-    });
-
-    // Get references to the sorting elements
-    const sortSelect = document.getElementById('sort-select');
-    const sortButton = document.getElementById('sort-button');
-
-    // Event listener for the sort button
-    sortButton.addEventListener('click', () => {
-        const selectedAttribute = sortSelect.value;
-        sortSuperheroes(selectedAttribute);
-    });
 
     // Function to sort and display superheroes based on the selected attribute
-    function sortSuperheroes(attribute) {
-        const superheroContainers = Array.from(document.querySelectorAll('.superhero-container'));
-
-        superheroContainers.sort((a, b) => {
-            const nameA = a.getAttribute(attribute).toLowerCase();
-            const nameB = b.getAttribute(attribute).toLowerCase();
-
-            if (nameA < nameB) {
-                return -1;
+    function sortSuperheroes(superheroList, sortCriteria) {
+        superheroList.sort((a, b) => {
+            switch (sortCriteria) {
+                case 'name':
+                    const nameA = a.dataset.name;
+                    const nameB = b.dataset.name;
+                    return nameA.localeCompare(nameB);
+                case 'race':
+                    const raceA = a.dataset.Race;
+                    const raceB = b.dataset.Race;
+                    return raceA.localeCompare(raceB);
+                case 'publisher':
+                    const pubA = a.dataset.Publisher;
+                    const pubB = b.dataset.Publisher;
+                    return pubA.localeCompare(pubB);
             }
-            if (nameA > nameB) {
-                return 1;
-            }
-            return 0;
-        });
-
-        const searchResults = document.getElementById('search-results');
-        searchResults.innerHTML = ''; // Clear previous results
-
-        superheroContainers.forEach((container) => {
-            searchResults.appendChild(container);
-        });
+        })
     }
 
 });

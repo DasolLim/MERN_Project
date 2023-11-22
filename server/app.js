@@ -44,6 +44,9 @@ app.get('/api/superhero/:id', (req, res) => {
 });
 
 // Item 2: Get all the powers for a given superhero ID
+//take hero id, find the hero name from superhero_info
+//using name find powers and only return true powers
+//to avoid errors, error handle wiht 'powers == null' returns 'No Powers'
 app.get('/api/superhero/powers/:id', (req, res) => {
     const superheroID = parseInt(req.params.id);
 
