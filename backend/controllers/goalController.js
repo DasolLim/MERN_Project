@@ -1,5 +1,9 @@
+// Defines several CRUD (Create, Read, Update, Delete) operations for 'goals'
+
+// This is a utility function that wraps an asynchronous route handler and catches any errors that might occur during the execution of asynchronous code
 const asyncHandler = require('express-async-handler')
 
+// Mongoose model for goal and user, used to interact with MongoDB database
 const Goal = require('../models/goalModel')
 const User = require('../models/userModel')
 
@@ -8,6 +12,7 @@ const User = require('../models/userModel')
 // @route   GET /api/goals
 // @access  Private
 const getGoals = asyncHandler(async (req, res) => {     // using express async handler
+    // Fetches goals associated with the authenticated user and sends them as a JSON response.
     const goals = await Goal.find({ user: req.user.id })
 
     res.status(200).json(goals)
@@ -24,6 +29,7 @@ const setGoal = asyncHandler(async (req, res) => {      // using express async h
         throw new Error('Please add a text field')
     }
 
+    // Creates a new goal on thee data provided in the request body
     const goal = await Goal.create({
         text: req.body.text,
         user: req.user.id,
@@ -39,6 +45,7 @@ const setGoal = asyncHandler(async (req, res) => {      // using express async h
 const updateGoal = asyncHandler(async (req, res) => {       // using express async handler
     const goal = await Goal.findById(req.params.id)
 
+    // Check for the existence of the goal
     if (!goal) {
         res.status(400)
         throw new Error('Goal not found')
@@ -56,6 +63,7 @@ const updateGoal = asyncHandler(async (req, res) => {       // using express asy
         throw new Error('User not authorized')
     }
 
+    // Updates an existing goal based on the ID specified in the request parameters
     const updatedGoal = await Goal.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
     })
@@ -87,11 +95,13 @@ const deleteGoal = asyncHandler(async (req, res) => {       // using express asy
         throw new Error('User not authorized')
     }
 
+    // Deletes an existing goal based on the ID specified in the request parameters
     await Goal.deleteOne({ _id: req.params.id })
 
     res.status(200).json({ id: req.params.id })
 })
 
+// Exporting router handlers as an object
 module.exports = {
     getGoals,
     setGoal,

@@ -6,8 +6,11 @@ const { errorHandler } = require('./middleware/errorMiddleware');
 const connectDB = require('./config/db');
 const port = process.env.PORT || 5000;
 
+// Connecting to MongoDB database
 connectDB();
 
+// Express is a web application framework for Node.js
+// Creating new application with defined routes to handle HTTP request and response
 const app = express();
 
 app.use(express.json());
