@@ -1,6 +1,3 @@
-// define application resouces
-// schema, fields for particular resources
-
 const mongoose = require('mongoose')
 
 const goalSchema = mongoose.Schema(
