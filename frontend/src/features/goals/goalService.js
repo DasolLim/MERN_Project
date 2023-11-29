@@ -44,7 +44,7 @@ const deleteGoal = async (goalId, token) => {
 const goalService = {
     createGoal,
     getGoals,
-    deleteGoal,
+    deleteGoal
 }
 
 export default goalService
