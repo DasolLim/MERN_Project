@@ -1,8 +1,23 @@
+// Used to manage goals
+/* 
+Provide a set of functions for
+creating, retrieving, and deleting goals by making HTTP requests
+
+Each function includes the necessary logic for handling user authentication through a token 
+and uses Axios for making the HTTP requests. 
+*/
+
+
+// 'axios' used for making HTTP requests
 import axios from 'axios'
 
+// Defining the base URL for the goals API
+// The actual endpoint paths will be appended to this base URL in the functions below
 const API_URL = '/api/goals/'
 
 // Create new goal
+// goalData contain data for the new goal
+// token is a user authenticaiton token used for authorization
 const createGoal = async (goalData, token) => {
     const config = {
         headers: {
@@ -10,8 +25,10 @@ const createGoal = async (goalData, token) => {
         },
     }
 
+    // POST request to the API endpoint with goalData and authorization configuration
     const response = await axios.post(API_URL, goalData, config)
 
+    // return the data from the server response
     return response.data
 }
 
@@ -23,6 +40,7 @@ const getGoals = async (token) => {
         },
     }
 
+    // GET request to the API endpoint (API_URL) with the authorization configuration.
     const response = await axios.get(API_URL, config)
 
     return response.data
@@ -36,11 +54,13 @@ const deleteGoal = async (goalId, token) => {
         },
     }
 
+    // DELETE request to the specific goal endpoint (API_URL + goalId) with the authorization configuration.
     const response = await axios.delete(API_URL + goalId, config)
 
     return response.data
 }
 
+// Exporting three functions
 const goalService = {
     createGoal,
     getGoals,

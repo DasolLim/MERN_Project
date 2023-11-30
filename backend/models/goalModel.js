@@ -19,6 +19,7 @@ const goalSchema = mongoose.Schema(
             type: String,
             required: [true, 'Please add a text value'],
         },
+        // TYPE REQUIRE FOR PUBLIC AND PRIVATE
     },
     {
         // Used to store the creation and last updated timestamps
