@@ -76,6 +76,8 @@ app.get('/api/publishers', (req, res) => {
     res.json(publisherNames);
 });
 
+const stringSimilarity = require('string-similarity');
+
 // Item 4: Get the first n number of matching superhero IDs for a given search pattern matching a given information field (name, race, or publisher)
 app.get('/api/search', (req, res) => {
     try {
@@ -106,7 +108,18 @@ app.get('/api/search', (req, res) => {
 
         const matchingSuperheroes = superheroInfoData.filter((superhero) => {
             const fieldValue = superhero[searchField] || '';
-            return fieldValue.includes(pattern);
+
+            // Soft matching logic: case-insensitive, ignore white-space, and tolerate up to two missing or different characters
+            const normalizedFieldValue = fieldValue.toLowerCase().replace(/\s/g, ''); // Convert to lowercase and remove white-space
+            const normalizedPattern = pattern.toLowerCase().replace(/\s/g, ''); // Convert to lowercase and remove white-space
+
+            for (let i = 0; i < normalizedPattern.length; i++) {
+                if (normalizedFieldValue.indexOf(normalizedPattern.substr(i)) !== -1) {
+                    return true; // Soft match found
+                }
+            }
+
+            return false;
         });
 
         // Restrict the number of results based on user input 'n'

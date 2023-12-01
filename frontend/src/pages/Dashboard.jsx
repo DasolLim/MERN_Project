@@ -27,6 +27,7 @@ function Dashboard() {
     const { goals, isLoading, isError, message } = useSelector(
         (state) => state.goals
     )
+
     // The useEffect hook is used to perform side effects in the component
     // Runs whenever the dependencies in the dependency array ([user, navigate, isError, message, dispatch]) change.
     useEffect(() => {
@@ -40,7 +41,7 @@ function Dashboard() {
         }
 
         if (!user) {
-            navigate('/')
+            navigate('/login')
         }
 
         dispatch(getGoals())
