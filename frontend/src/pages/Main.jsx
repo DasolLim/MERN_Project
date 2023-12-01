@@ -20,7 +20,7 @@ const getSearchCategoryLabel = (searchCategory) => {
     }
 };
 
-function Dashboard() {
+function Main() {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchCategory, setSearchCategory] = useState('name');
     const [superheroes, setSuperheroes] = useState([]);
@@ -71,15 +71,17 @@ function Dashboard() {
                 <p>Superhero Information</p>
             </section>
 
-            <SearchForm
-                onSubmit={handleSubmit}
-                onInputChange={(e) => setSearchTerm(e.target.value)}
-                searchTerm={searchTerm}
-                searchCategory={searchCategory}
-                onCategoryChange={handleCategoryChange}
-                onResultInputChange={handleResultCountChange}
-                resultCount={resultCount}
-            />
+            <div className='form-group'>
+                <SearchForm
+                    onSubmit={handleSubmit}
+                    onInputChange={(e) => setSearchTerm(e.target.value)}
+                    searchTerm={searchTerm}
+                    searchCategory={searchCategory}
+                    onCategoryChange={handleCategoryChange}
+                    onResultInputChange={handleResultCountChange}
+                    resultCount={resultCount}
+                />
+            </div>
 
             <section className='content'>
                 {isLoading ? (
@@ -96,4 +98,4 @@ function Dashboard() {
     );
 }
 
-export default Dashboard;
+export default Main;
