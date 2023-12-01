@@ -13,13 +13,13 @@ import Register from './pages/Register'
 // App is the functional component in react
 function App() {
   return (
-    // <> is used to wrap multiple elements wihtout introducitng additonal DOM element
     <>
       <Router>
         <div className='container'>
           <Header />
           {/* Define multiple routes in the application */}
           <Routes>
+            {/* Set the default route to Main */}
             <Route path='/' element={<Main />} />
             <Route path='/dashboard' element={<Dashboard />} />
             <Route path='/login' element={<Login />} />
@@ -30,7 +30,7 @@ function App() {
       {/* Used to display toast notifications */}
       <ToastContainer />
     </>
-  )
+  );
 }
 
-export default App
+export default App;

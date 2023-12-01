@@ -48,17 +48,20 @@ function Login() {
     }
 
     // Prevents the default form submission
-    const onSubmit = (e) => {
-        e.preventDefault()
+    const onSubmit = async (e) => {
+        e.preventDefault();
 
-        // Creates userData with email and password
         const userData = {
             email,
             password,
-        }
+        };
 
-        // Dispatch accepts an object that represents the type of action we want to execute when it is called
-        dispatch(login(userData))
+        try {
+            await dispatch(login(userData));
+            navigate('/dashboard');
+        } catch (error) {
+            console.error('Login error:', error);
+        }
     }
 
     if (isLoading) {
