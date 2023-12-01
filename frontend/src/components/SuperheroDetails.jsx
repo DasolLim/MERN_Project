@@ -1,7 +1,9 @@
-// Search output
-import React from 'react';
+// SuperheroDetails.jsx
+import React, { useState } from 'react';
 
 const SuperheroDetails = ({ superhero }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+
     const handleSearchOnDDG = () => {
         const searchQuery = `${superhero.name} ${superhero.Publisher}`;
         const ddgSearchUrl = `https://duckduckgo.com/?q=${encodeURIComponent(searchQuery)}`;
@@ -10,13 +12,29 @@ const SuperheroDetails = ({ superhero }) => {
         window.open(ddgSearchUrl, '_blank');
     };
 
+    const handleToggleExpand = () => {
+        setIsExpanded(!isExpanded); // Toggle the value
+    };
+
     return (
         <div className="superhero-container">
-            {Object.entries(superhero).map(([key, value]) => (
-                <div key={key} className='attribute'>
-                    <strong>{key}:</strong> {value}
+            <div className="superhero-header">
+                <h2>{superhero.name}</h2>
+                <p>{superhero.Publisher}</p>
+                <button onClick={handleToggleExpand} className='btn btn-block'>
+                    {isExpanded ? 'Collapse' : 'Expand'}
+                </button>
+            </div>
+
+            {isExpanded && (
+                <div className="superhero-details">
+                    {Object.entries(superhero).map(([key, value]) => (
+                        <div key={key} className='attribute'>
+                            <strong>{key}:</strong> {value}
+                        </div>
+                    ))}
                 </div>
-            ))}
+            )}
             <button onClick={handleSearchOnDDG} className='btn btn-block'>Search on DDG</button>
         </div>
     );
