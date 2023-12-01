@@ -1,8 +1,9 @@
+// searchService.js
 const BASE_URL = '/api/search?';
 
-export const getSuperheroes = async (field, pattern) => {
+export const getSuperheroes = async (field, pattern, n) => {
     try {
-        const response = await fetch(`${BASE_URL}field=${field}&pattern=${encodeURIComponent(pattern)}`);
+        const response = await fetch(`${BASE_URL}field=${field}&pattern=${encodeURIComponent(pattern)}&n=${n}`);
         if (!response.ok) {
             throw new Error('Failed to fetch superheroes');
         }

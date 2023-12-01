@@ -26,6 +26,7 @@ function Dashboard() {
     const [superheroes, setSuperheroes] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedSuperhero, setSelectedSuperhero] = useState(null);
+    const [resultCount, setResultCount] = useState(5); // Default result count
 
     const { user } = useSelector((state) => state.auth);
 
@@ -45,13 +46,17 @@ function Dashboard() {
         setIsLoading(true);
 
         try {
-            const response = await getSuperheroes(searchCategory, searchTerm);
+            const response = await getSuperheroes(searchCategory, searchTerm, resultCount);
             setSuperheroes(response);
         } catch (error) {
             console.error(error);
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleResultCountChange = (count) => {
+        setResultCount(count);
     };
 
     useEffect(() => {
@@ -72,6 +77,8 @@ function Dashboard() {
                 searchTerm={searchTerm}
                 searchCategory={searchCategory}
                 onCategoryChange={handleCategoryChange}
+                onResultInputChange={handleResultCountChange}
+                resultCount={resultCount}
             />
 
             <section className='content'>

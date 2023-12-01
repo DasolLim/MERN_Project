@@ -17,7 +17,7 @@ const getSearchCategoryLabel = (searchCategory) => {
     }
 };
 
-const SearchForm = ({ onSubmit, onInputChange, searchTerm, searchCategory, onCategoryChange }) => {
+const SearchForm = ({ onSubmit, onInputChange, searchTerm, searchCategory, onCategoryChange, onResultInputChange, resultCount }) => {
     return (
         <form onSubmit={onSubmit}>
             <input type="text" value={searchTerm} onChange={onInputChange} placeholder="Search..." />
@@ -27,7 +27,14 @@ const SearchForm = ({ onSubmit, onInputChange, searchTerm, searchCategory, onCat
                 <option value="publisher">Publisher</option>
                 <option value="power">Power</option>
             </select>
-            <label htmlFor="search-category">Search Category: </label>
+            <label htmlFor="result-count">Result Count: </label>
+            <input
+                type="number"
+                id="result-count"
+                value={resultCount}
+                onChange={(e) => onResultInputChange(e.target.value)}
+                min="1" // Minimum value
+            />
             <span id="search-category">{getSearchCategoryLabel(searchCategory)}</span>
             <button type="submit">Search</button>
         </form>

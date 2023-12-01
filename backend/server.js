@@ -78,36 +78,44 @@ app.get('/api/publishers', (req, res) => {
 
 // Item 4: Get the first n number of matching superhero IDs for a given search pattern matching a given information field (name, race, or publisher)
 app.get('/api/search', (req, res) => {
-    const { field, pattern, n } = req.query;
+    try {
+        const { field, pattern, n } = req.query;
 
-    if (!field || !pattern) {
-        return res.status(400).json({ error: 'Both field and pattern are required parameters.' });
-    }
+        if (!field || !pattern) {
+            return res.status(400).json({ error: 'Both field and pattern are required parameters.' });
+        }
 
-    // Create a variable to store the field name to search
-    let searchField;
+        // Validation for the 'n' parameter
+        if (n && (isNaN(n) || n < 1 || n > 100)) {
+            return res.status(400).json({ error: 'Invalid value for parameter "n".' });
+        }
 
-    // Check the value of 'field' and set the corresponding search field
-    if (field === 'name') {
-        searchField = 'name';
-    } else if (field === 'race') {
-        searchField = 'Race';
-    } else if (field === 'publisher') {
-        searchField = 'Publisher';
-    } else {
-        return res.status(400).json({ error: 'Invalid field value.' });
-    }
+        // Create a variable to store the field name to search
+        let searchField;
 
-    const matchingSuperheroes = superheroInfoData.filter((superhero) => {
-        const fieldValue = superhero[searchField] || '';
-        return fieldValue.toLowerCase().includes(pattern.toLowerCase());
-    });
+        // Check the value of 'field' and set the corresponding search field
+        if (field === 'name') {
+            searchField = 'name';
+        } else if (field === 'race') {
+            searchField = 'Race';
+        } else if (field === 'publisher') {
+            searchField = 'Publisher';
+        } else {
+            return res.status(400).json({ error: 'Invalid field value.' });
+        }
 
-    if (n) {
-        const limitedSuperheroes = matchingSuperheroes.slice(0, parseInt(n, 10));
+        const matchingSuperheroes = superheroInfoData.filter((superhero) => {
+            const fieldValue = superhero[searchField] || '';
+            return fieldValue.includes(pattern);
+        });
+
+        // Restrict the number of results based on user input 'n'
+        const limitedSuperheroes = n ? matchingSuperheroes.slice(0, parseInt(n, 10)) : matchingSuperheroes;
+
         res.json(limitedSuperheroes);
-    } else {
-        res.json(matchingSuperheroes);
+    } catch (error) {
+        console.error('Error in search endpoint:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
