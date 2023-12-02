@@ -4,19 +4,14 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getPublicGoals } from '../features/goals/goalSlice';
 
-function PublicGoalsList() {
+const PublicGoalsList = () => {
     const dispatch = useDispatch();
     const publicGoals = useSelector((state) => state.goals.publicGoals || []);
-
-    console.log(publicGoals);
 
     useEffect(() => {
         // Fetch 10 public goals from the server when the component mounts
         dispatch(getPublicGoals());
     }, [dispatch]);
-
-    // Log Redux state for debugging
-    console.log('Redux State:', useSelector((state) => state.goals));
 
     return (
         <div>
@@ -25,7 +20,7 @@ function PublicGoalsList() {
                 {publicGoals.map((goal) => (
                     <li key={goal._id}>
                         <p>Name: {goal.text}</p>
-                        <p>Creator's Nickname: {goal.creatorNickname}</p>
+                        {/* <p>Creator's Nickname: {goal.creatorNickname}</p> */}
                         <p>Last Modified: {new Date(goal.lastModified).toLocaleString()}</p>
                     </li>
                 ))}

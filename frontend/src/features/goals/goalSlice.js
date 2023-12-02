@@ -17,8 +17,8 @@ export const getPublicGoals = createAsyncThunk(
         try {
             console.log('Fetching public goals...');
 
-            const token = thunkAPI.getState().auth.user.token;
-            const response = await goalService.getPublicGoals(token);
+            // No need to fetch public goals with a token
+            const response = await goalService.getPublicGoals();
 
             console.log('Public goals fetched:', response);
 

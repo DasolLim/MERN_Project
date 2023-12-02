@@ -60,11 +60,19 @@ const deleteGoal = async (goalId, token) => {
     return response.data
 }
 
+// Get public goals
+const getPublicGoals = async () => {
+    // No need for a token to fetch public goals
+    const response = await axios.get(API_URL + 'public');
+    return response.data;
+}
+
 // Exporting three functions
 const goalService = {
     createGoal,
     getGoals,
-    deleteGoal
+    deleteGoal,
+    getPublicGoals,
 }
 
 export default goalService
