@@ -4,12 +4,11 @@ import React, { useState } from 'react';
 const SuperheroDetails = ({ superhero }) => {
     const [isExpanded, setIsExpanded] = useState(false);
 
-    const handleSearchOnDDG = () => {
+    const DDGSearch = () => {
         const searchQuery = `${superhero.name} ${superhero.Publisher}`;
-        const ddgSearchUrl = `https://duckduckgo.com/?q=${encodeURIComponent(searchQuery)}`;
+        const searchURL = `https://duckduckgo.com/?q=${encodeURIComponent(searchQuery)}`;
 
-        // Open a new tab with DDG search page
-        window.open(ddgSearchUrl, '_blank');
+        window.open(searchURL, '_blank');
     };
 
     const handleToggleExpand = () => {
@@ -35,7 +34,7 @@ const SuperheroDetails = ({ superhero }) => {
                     ))}
                 </div>
             )}
-            <button onClick={handleSearchOnDDG} className='btn btn-block'>Search on DDG</button>
+            <button onClick={DDGSearch} className='btn btn-block'>Search on DDG</button>
         </div>
     );
 };
