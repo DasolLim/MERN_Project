@@ -10,13 +10,13 @@ function GoalForm() {
     const dispatch = useDispatch()
 
     const onSubmit = (e) => {
-        e.preventDefault()
+        e.preventDefault();
 
-        dispatch(createGoal({ text: 'USER', isPrivate: true }));
-        setText('')
-        // Include isPrivate in the createGoal action
+        // Use the isPrivate state value in createGoal action
+        dispatch(createGoal({ text: 'USER', isPrivate }));
+        setText('');
         setIsPrivate(false);
-    }
+    };
 
     return (
         <section className='form'>

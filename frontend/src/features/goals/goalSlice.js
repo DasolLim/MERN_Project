@@ -3,27 +3,36 @@ import goalService from './goalService'
 
 const initialState = {
     goals: [],
-    publicGoals: [], // Add a new state property for public goals
+    publicGoals: [], // Ensure this property is defined
     isError: false,
     isSuccess: false,
     isLoading: false,
     message: '',
-}
+};
 
 // Get public goals
 export const getPublicGoals = createAsyncThunk(
-    'goals/getPublic',
+    'goals/public',
     async (_, thunkAPI) => {
         try {
+            console.log('Fetching public goals...');
+
             const token = thunkAPI.getState().auth.user.token;
-            return await goalService.getPublicGoals(token);
+            const response = await goalService.getPublicGoals(token);
+
+            console.log('Public goals fetched:', response);
+
+            return response;
         } catch (error) {
+            console.error('Error fetching public goals:', error);
+
             const message =
                 (error.response &&
                     error.response.data &&
                     error.response.data.message) ||
                 error.message ||
                 error.toString();
+
             return thunkAPI.rejectWithValue(message);
         }
     }
@@ -42,9 +51,9 @@ export const createGoal = createAsyncThunk(
             An access token is a piece of data that represents the authorization granted to a user 
             and is used to access protected resources.
             */
-            const token = thunkAPI.getState().auth.user.token
+            const token = thunkAPI.getState().auth.user.token;
             // Call the 'createGoal' function from 'goalService' with the goalData and token
-            return await goalService.createGoal(goalData, token)
+            return await goalService.createGoal(goalData, token);
         } catch (error) {
             const message =
                 (error.response &&

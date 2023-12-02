@@ -8,18 +8,23 @@ const Goal = require('../models/goalModel')
 const User = require('../models/userModel')
 
 const getPublicGoals = asyncHandler(async (req, res) => {
-    const goals = await User.find({ isPrivate: false })
-        .sort({ lastModified: -1 })
-        .limit(10);
+    try {
+        const goals = await Goal.find({ isPrivate: false })
+            .sort({ lastModified: -1 })
+            .limit(10);
 
-    const publicGoals = goals.map((goal) => ({
-        _id: goal._id,
-        text: goal.text,
-        creatorNickname: goal.user.nickname, // Assuming there's a 'nickname' field in the User model
-        lastModified: goal.lastModified,
-    }));
+        const publicGoals = goals.map((goal) => ({
+            _id: goal._id,
+            text: goal.text,
+            creatorNickname: goal.user.nickname, // Assuming there's a 'nickname' field in the User model
+            lastModified: goal.lastModified,
+        }));
 
-    res.status(200).json(publicGoals);
+        res.status(200).json(publicGoals);
+    } catch (error) {
+        console.error('Error in getPublicGoals:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 });
 
 // READ

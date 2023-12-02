@@ -26,7 +26,7 @@ const createGoal = async (goalData, token) => {
     }
 
     // POST request to the API endpoint with goalData and authorization configuration
-    const response = await axios.post(API_URL, goalData, config)
+    const response = await axios.post(API_URL, { ...goalData, isPrivate: goalData.isPrivate }, config);
 
     // return the data from the server response
     return response.data

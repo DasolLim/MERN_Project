@@ -1,16 +1,22 @@
 // PublicGoalsList.jsx
+
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getPublicGoals } from '../features/goals/goalSlice';
 
 function PublicGoalsList() {
     const dispatch = useDispatch();
-    const publicGoals = useSelector((state) => state.goals.publicGoals);
+    const publicGoals = useSelector((state) => state.goals.publicGoals || []);
+
+    console.log(publicGoals);
 
     useEffect(() => {
-        // Fetch public goals from the server
+        // Fetch 10 public goals from the server when the component mounts
         dispatch(getPublicGoals());
     }, [dispatch]);
+
+    // Log Redux state for debugging
+    console.log('Redux State:', useSelector((state) => state.goals));
 
     return (
         <div>
