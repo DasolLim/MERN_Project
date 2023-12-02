@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import goalService from './goalService'
+import { toast } from 'react-toastify';
 
 const initialState = {
     goals: [],
@@ -53,6 +54,16 @@ export const createGoal = createAsyncThunk(
             */
             const token = thunkAPI.getState().auth.user.token;
             // Call the 'createGoal' function from 'goalService' with the goalData and token
+
+            // Attempt to get the user's existing goals
+            const userGoals = await goalService.getGoals(token);
+
+            // Check if the user has already created 20 goals
+            if (userGoals.length >= 20) {
+                toast.error('Error: Maximum Goal Limit of 20 Reached');
+                throw new Error('You have reached the maximum limit of 20 goals.');
+            }
+
             return await goalService.createGoal(goalData, token);
         } catch (error) {
             const message =

@@ -7,9 +7,9 @@ Each function includes the necessary logic for handling user authentication thro
 and uses Axios for making the HTTP requests. 
 */
 
-
 // 'axios' used for making HTTP requests
 import axios from 'axios'
+import { toast } from 'react-toastify';
 
 // Defining the base URL for the goals API
 // The actual endpoint paths will be appended to this base URL in the functions below
@@ -19,6 +19,19 @@ const API_URL = '/api/goals/'
 // goalData contain data for the new goal
 // token is a user authenticaiton token used for authorization
 const createGoal = async (goalData, token) => {
+    // Restrict the users ot create up to 20 named lists
+    const userGoals = await getGoals(token);
+    const isDuplicateName = userGoals.some((goal) => goal.text == goalData.text);
+
+    if (isDuplicateName) {
+        toast.error('Error: Duplicate Name');
+        throw new Error('Duplicate goal name.');
+    }
+
+    if (userGoals.length >= 20) {
+        throw new Error('You have reached the maximum limit of 20 goals.');
+    }
+
     const config = {
         headers: {
             Authorization: `Bearer ${token}`,
