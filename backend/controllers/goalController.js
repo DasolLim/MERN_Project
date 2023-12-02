@@ -7,6 +7,21 @@ const asyncHandler = require('express-async-handler')
 const Goal = require('../models/goalModel')
 const User = require('../models/userModel')
 
+const getPublicGoals = asyncHandler(async (req, res) => {
+    const goals = await User.find({ isPrivate: false })
+        .sort({ lastModified: -1 })
+        .limit(10);
+
+    const publicGoals = goals.map((goal) => ({
+        _id: goal._id,
+        text: goal.text,
+        creatorNickname: goal.user.nickname, // Assuming there's a 'nickname' field in the User model
+        lastModified: goal.lastModified,
+    }));
+
+    res.status(200).json(publicGoals);
+});
+
 // READ
 // @desc    Get goals
 // @route   GET /api/goals
@@ -107,4 +122,5 @@ module.exports = {
     setGoal,
     updateGoal,
     deleteGoal,
+    getPublicGoals
 }

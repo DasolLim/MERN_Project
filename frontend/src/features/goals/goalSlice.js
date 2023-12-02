@@ -3,11 +3,31 @@ import goalService from './goalService'
 
 const initialState = {
     goals: [],
+    publicGoals: [], // Add a new state property for public goals
     isError: false,
     isSuccess: false,
     isLoading: false,
     message: '',
 }
+
+// Get public goals
+export const getPublicGoals = createAsyncThunk(
+    'goals/getPublic',
+    async (_, thunkAPI) => {
+        try {
+            const token = thunkAPI.getState().auth.user.token;
+            return await goalService.getPublicGoals(token);
+        } catch (error) {
+            const message =
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                error.message ||
+                error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
 
 // Create new goal
 // Async thunks are functiosn that dispatch actions at different lifecycle stages of 
@@ -133,6 +153,19 @@ export const goalSlice = createSlice({
                 state.isError = true
                 state.message = action.payload
             })
+            .addCase(getPublicGoals.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(getPublicGoals.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.publicGoals = action.payload; // Update publicGoals state
+            })
+            .addCase(getPublicGoals.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            });
     }
 })
 

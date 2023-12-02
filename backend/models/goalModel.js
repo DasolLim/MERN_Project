@@ -24,6 +24,10 @@ const goalSchema = mongoose.Schema(
             type: Boolean,
             default: false, // Default is set to false for existing goals
         },
+        lastModified: {
+            type: Date,
+            default: Date.now,
+        },
     },
     {
         // Used to store the creation and last updated timestamps

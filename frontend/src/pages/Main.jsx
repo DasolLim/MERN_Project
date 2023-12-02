@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import SearchForm from '../components/SearchForm.jsx';
 import SuperheroDetails from '../components/SuperheroDetails';
 import Spinner from '../components/Spinner';
+import PublicGoalsList from '../components/PublicGoalsList'; // Import the PublicGoalsList component
 import { getSuperheroes } from '../features/search/searchService';
 import { useSelector } from 'react-redux';
 
@@ -84,6 +85,10 @@ function Main() {
             </div>
 
             <section className='content'>
+                {/* Display the PublicGoalsList component */}
+                <PublicGoalsList />
+
+                {/* Display your existing superhero list */}
                 {isLoading ? (
                     <Spinner />
                 ) : (
