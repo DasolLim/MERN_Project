@@ -9,16 +9,10 @@ const User = require('../models/userModel')
 
 const getPublicGoals = asyncHandler(async (req, res) => {
     try {
-        const goals = await Goal.find({ isPrivate: false })
+        // Retrieve up to 10 public goals ordered by last-modified date
+        const publicGoals = await Goal.find({ isPrivate: false })
             .sort({ lastModified: -1 })
             .limit(10);
-
-        const publicGoals = goals.map((goal) => ({
-            _id: goal._id,
-            text: goal.text,
-            creatorNickname: goal.user.nickname, // Assuming there's a 'nickname' field in the User model
-            lastModified: goal.lastModified,
-        }));
 
         res.status(200).json(publicGoals);
     } catch (error) {
@@ -49,13 +43,13 @@ const setGoal = asyncHandler(async (req, res) => {      // using express async h
         throw new Error('Please add a text field')
     }
 
-    // Creates a new goal on thee data provided in the request body
+    // Create a new goal with the creator's nickname
     const goal = await Goal.create({
         text: req.body.text,
         user: req.user.id,
-    })
+    });
 
-    res.status(200).json(goal)
+    res.status(200).json(goal);
 })
 
 // UPDATE

@@ -13,6 +13,8 @@ const superheroPowersData = require('./data/superhero_powers.json');
 const info = superheroInfoData;
 const powers = superheroPowersData;
 
+const Goal = require('./models/goalModel');
+
 // Connecting to MongoDB database
 connectDB();
 
@@ -25,6 +27,16 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use('/api/goals', require('./routes/goalRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
+
+// Route to get public goals
+app.get('/api/goals/public', async (req, res) => {
+    try {
+        const goals = await Goal.find({ isPrivate: false }).sort({ lastModified: -1 });
+        res.json(goals);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 
 // Item 1: Get all the superhero information for a given superhero ID
 app.get('/api/superhero/:id', (req, res) => {
