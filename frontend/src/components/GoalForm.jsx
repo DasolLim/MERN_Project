@@ -1,19 +1,18 @@
-import { useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { createGoal } from '../features/goals/goalSlice'
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { createGoal } from '../features/goals/goalSlice';
 
 function GoalForm() {
-    const [text, setText] = useState('')
-    // Add a state to manage the privacy status
+    const [text, setText] = useState('');
     const [isPrivate, setIsPrivate] = useState(false);
 
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
 
     const onSubmit = (e) => {
         e.preventDefault();
 
         // Use the isPrivate state value in createGoal action
-        dispatch(createGoal({ text: 'USER', isPrivate }));
+        dispatch(createGoal({ text, isPrivate }));
         setText('');
         setIsPrivate(false);
     };
@@ -21,7 +20,6 @@ function GoalForm() {
     return (
         <section className='form'>
             <form onSubmit={onSubmit}>
-                {/* Include a checkbox to mark the goal as private */}
                 <div className='form-group'>
                     <label htmlFor='isPrivate'>Private Goal</label>
                     <input
@@ -50,7 +48,7 @@ function GoalForm() {
                 </div>
             </form>
         </section>
-    )
+    );
 }
 
-export default GoalForm
+export default GoalForm;

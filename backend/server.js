@@ -31,7 +31,7 @@ app.use('/api/users', require('./routes/userRoutes'));
 // Route to get public goals
 app.get('/api/goals/public', async (req, res) => {
     try {
-        const goals = await Goal.find({ isPrivate: false }).sort({ lastModified: -1 });
+        const goals = await Goal.find({ isPrivate: false }).sort({ lastModified: -1 }).limit(10);
         res.json(goals);
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });

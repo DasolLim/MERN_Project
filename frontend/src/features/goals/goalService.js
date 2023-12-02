@@ -64,7 +64,7 @@ const deleteGoal = async (goalId, token) => {
 const getPublicGoals = async () => {
     // No need for a token to fetch public goals
     const response = await axios.get(API_URL + 'public');
-    return response.data;
+    return response.data.filter(goal => !goal.isPrivate); // Filter out private goals
 }
 
 // Exporting three functions
