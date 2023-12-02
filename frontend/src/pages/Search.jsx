@@ -21,7 +21,7 @@ const getSearchCategoryLabel = (searchCategory) => {
     }
 };
 
-function Main() {
+function Search() {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchCategory, setSearchCategory] = useState('name');
     const [superheroes, setSuperheroes] = useState([]);
@@ -104,4 +104,4 @@ function Main() {
     );
 }
 
-export default Main;
+export default Search;

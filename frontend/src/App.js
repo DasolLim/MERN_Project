@@ -5,7 +5,8 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 // Components from specific file paths
 import Header from './components/Header'
-import Main from './pages/Main'
+import Home from './pages/Home'
+import Search from './pages/Search'
 import Dashboard from './pages/Dashboard'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -20,7 +21,8 @@ function App() {
           {/* Define multiple routes in the application */}
           <Routes>
             {/* Set the default route to Main */}
-            <Route path='/' element={<Main />} />
+            <Route path='/' element={<Home />} />
+            <Route path='/search' element={<Search />} />
             <Route path='/dashboard' element={<Dashboard />} />
             <Route path='/login' element={<Login />} />
             <Route path='/register' element={<Register />} />

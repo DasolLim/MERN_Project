@@ -1,4 +1,6 @@
 import { FaSignInAlt, FaSignOutAlt, FaUser } from 'react-icons/fa'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { logout, reset } from '../features/auth/authSlice'
@@ -22,11 +24,18 @@ function Header() {
             </div>
             <ul>
                 {user ? (
-                    <li>
-                        <button className='btn' onClick={onLogout}>
-                            <FaSignOutAlt /> Logout
-                        </button>
-                    </li>
+                    <ul>
+                        <li>
+                            <Link to='/search'>
+                                <FaUser /> Search
+                            </Link>
+                        </li>
+                        <li>
+                            <button className='btn' onClick={onLogout}>
+                                <FaSignOutAlt /> Logout
+                            </button>
+                        </li>
+                    </ul>
                 ) : (
                     <>
                         <li>
@@ -37,6 +46,11 @@ function Header() {
                         <li>
                             <Link to='/register'>
                                 <FaUser /> Register
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to='/'>
+                                <FontAwesomeIcon icon={faHome} /> Home
                             </Link>
                         </li>
                     </>
