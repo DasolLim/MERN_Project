@@ -51,6 +51,7 @@ function Login() {
     const onSubmit = async (e) => {
         e.preventDefault();
 
+        // Creates userData with email and password
         const userData = {
             email,
             password,
@@ -60,8 +61,11 @@ function Login() {
             await dispatch(login(userData));
             navigate('/dashboard');
         } catch (error) {
-            console.error('Login error:', error);
+            console.error('Login Error:', error);
         }
+
+        // Dispatch accepts an object that represents the type of action we want to execute when it is called
+        dispatch(login(userData))
     }
 
     if (isLoading) {
