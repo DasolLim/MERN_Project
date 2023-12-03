@@ -5,6 +5,7 @@ import { createGoal } from '../features/goals/goalSlice';
 function GoalForm() {
     const [text, setText] = useState('');
     const [isPrivate, setIsPrivate] = useState(false);
+    const [description, setDescription] = useState(''); // New state for description
 
     const dispatch = useDispatch();
 
@@ -14,9 +15,12 @@ function GoalForm() {
         // Explicitly set isPrivate to false if it's a public goal
         console.log('isPrivate state:', isPrivate);
 
+        console.log('description text:', description);
+
         // Explicitly set isPrivate to false if it's a public goal
-        dispatch(createGoal({ text, isPrivate: isPrivate }));
+        dispatch(createGoal({ text, isPrivate: isPrivate, description }));
         setText('');
+        setDescription('');
     };
 
     return (
@@ -44,6 +48,19 @@ function GoalForm() {
                         onChange={(e) => setText(e.target.value)}
                     />
                 </div>
+
+                {/* New input field for the optional description */}
+                <div className='form-group'>
+                    <label htmlFor='description'>Description</label>
+                    <input
+                        type='text'
+                        name='description'
+                        id='description'
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                    />
+                </div>
+
                 <div className='form-group'>
                     <button className='btn btn-block' type='submit'>
                         Add Goal

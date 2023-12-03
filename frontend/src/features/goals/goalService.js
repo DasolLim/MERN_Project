@@ -38,9 +38,9 @@ const createGoal = async (goalData, token) => {
         },
     }
 
-    // Set isPrivate to true only if the goal is marked as private
-    const response = await axios.post(API_URL, { ...goalData, isPrivate: goalData.isPrivate ? true : false }, config);
-    console.log(response.data); // Log the response
+    const response = await axios.post(API_URL, goalData, config);
+    // Log response
+    console.log(response.data);
     return response.data;
 }
 

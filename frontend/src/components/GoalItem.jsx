@@ -8,6 +8,7 @@ function GoalItem({ goal }) {
         <div className='goal'>
             <div>{new Date(goal.createdAt).toLocaleString('en-US')}</div>
             <h2>{goal.text}</h2>
+            <p>Description: {goal.description}</p>
             <button onClick={() => dispatch(deleteGoal(goal._id))} className='close'>
                 X
             </button>

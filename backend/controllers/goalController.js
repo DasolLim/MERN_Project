@@ -49,6 +49,8 @@ const setGoal = asyncHandler(async (req, res) => {      // using express async h
         user: req.user.id,
         // Use the isPrivate value from the request body or default to false
         isPrivate: req.body.isPrivate || false,
+        // Use the description value from the request body or default to an empty string
+        description: req.body.description, // Add this line to handle the description
     });
 
     res.status(200).json(goal);

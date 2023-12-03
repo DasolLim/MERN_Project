@@ -18,6 +18,7 @@ const PublicGoalsList = () => {
                 {publicGoals.map((goal) => (
                     <li key={goal._id}>
                         <p>Name: {goal.text}</p>
+                        <p>Description: {goal.description}</p>
                         <p>Last Modified: {new Date(goal.lastModified).toLocaleString()}</p>
                     </li>
                 ))}
