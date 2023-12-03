@@ -11,15 +11,18 @@ function GoalForm() {
     const onSubmit = (e) => {
         e.preventDefault();
 
-        // Use the isPrivate state value in createGoal action
-        dispatch(createGoal({ text, isPrivate }));
+        // Explicitly set isPrivate to false if it's a public goal
+        console.log('isPrivate state:', isPrivate);
+
+        // Explicitly set isPrivate to false if it's a public goal
+        dispatch(createGoal({ text, isPrivate: isPrivate }));
         setText('');
-        setIsPrivate(false);
     };
 
     return (
         <section className='form'>
             <form onSubmit={onSubmit}>
+                {/* Include a checkbox to mark the goal as private */}
                 <div className='form-group'>
                     <label htmlFor='isPrivate'>Private Goal</label>
                     <input

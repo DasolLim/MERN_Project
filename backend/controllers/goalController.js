@@ -43,10 +43,12 @@ const setGoal = asyncHandler(async (req, res) => {      // using express async h
         throw new Error('Please add a text field')
     }
 
-    // Create a new goal with the creator's nickname
+    // Explicitly set isPrivate based on the input from the client
     const goal = await Goal.create({
         text: req.body.text,
         user: req.user.id,
+        // Use the isPrivate value from the request body or default to false
+        isPrivate: req.body.isPrivate || false,
     });
 
     res.status(200).json(goal);

@@ -22,7 +22,7 @@ const goalSchema = mongoose.Schema(
         // Indicate whether a goal is private or public
         isPrivate: {
             type: Boolean,
-            default: true, // Default is set to false for existing goals
+            default: false,
         },
         lastModified: {
             type: Date,

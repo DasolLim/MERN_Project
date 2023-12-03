@@ -26,6 +26,11 @@ function Header() {
                 {user ? (
                     <ul>
                         <li>
+                            <Link to='/dashboard'>
+                                <FaUser /> Dashboard
+                            </Link>
+                        </li>
+                        <li>
                             <Link to='/search'>
                                 <FaUser /> Search
                             </Link>

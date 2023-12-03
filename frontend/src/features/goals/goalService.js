@@ -15,13 +15,12 @@ import { toast } from 'react-toastify';
 // The actual endpoint paths will be appended to this base URL in the functions below
 const API_URL = '/api/goals/'
 
-// Create new goal
 // goalData contain data for the new goal
 // token is a user authenticaiton token used for authorization
+// Create new goal
 const createGoal = async (goalData, token) => {
-    // Restrict the users ot create up to 20 named lists
     const userGoals = await getGoals(token);
-    const isDuplicateName = userGoals.some((goal) => goal.text == goalData.text);
+    const isDuplicateName = userGoals.some((goal) => goal.text === goalData.text);
 
     if (isDuplicateName) {
         toast.error('Error: Duplicate Name');
@@ -29,6 +28,7 @@ const createGoal = async (goalData, token) => {
     }
 
     if (userGoals.length >= 20) {
+        toast.error('Error: Reached Maximum Limit of 20 Goals');
         throw new Error('You have reached the maximum limit of 20 goals.');
     }
 
@@ -38,26 +38,28 @@ const createGoal = async (goalData, token) => {
         },
     }
 
-    // POST request to the API endpoint with goalData and authorization configuration
-    const response = await axios.post(API_URL, { ...goalData, isPrivate: goalData.isPrivate }, config);
-
-    // return the data from the server response
-    return response.data
+    // Set isPrivate to true only if the goal is marked as private
+    const response = await axios.post(API_URL, { ...goalData, isPrivate: goalData.isPrivate ? true : false }, config);
+    console.log(response.data); // Log the response
+    return response.data;
 }
 
 // Get user goals
-const getGoals = async (token) => {
+const getGoals = async (token, includePrivate = true) => {
     const config = {
         headers: {
             Authorization: `Bearer ${token}`,
         },
-    }
+    };
 
     // GET request to the API endpoint (API_URL) with the authorization configuration.
-    const response = await axios.get(API_URL, config)
+    const response = await axios.get(API_URL, config);
 
-    return response.data
-}
+    // Filter out private goals if includePrivate is false
+    const filteredGoals = includePrivate ? response.data : response.data.filter(goal => !goal.isPrivate);
+
+    return filteredGoals;
+};
 
 // Delete user goal
 const deleteGoal = async (goalId, token) => {
@@ -77,7 +79,7 @@ const deleteGoal = async (goalId, token) => {
 const getPublicGoals = async () => {
     // No need for a token to fetch public goals
     const response = await axios.get(API_URL + 'public');
-    return response.data.filter(goal => !goal.isPrivate); // Filter out private goals
+    return response.data.filter(goal => !goal.isPrivate).sort((a, b) => b.lastModified - a.lastModified).slice(0, 10); // Filter out private goals and sort by last modified date
 }
 
 // Exporting three functions

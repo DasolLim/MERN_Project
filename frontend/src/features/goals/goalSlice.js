@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import goalService from './goalService'
-import { toast } from 'react-toastify';
 
 const initialState = {
     goals: [],
@@ -55,16 +54,8 @@ export const createGoal = createAsyncThunk(
             const token = thunkAPI.getState().auth.user.token;
             // Call the 'createGoal' function from 'goalService' with the goalData and token
 
-            // Attempt to get the user's existing goals
-            const userGoals = await goalService.getGoals(token);
-
-            // Check if the user has already created 20 goals
-            if (userGoals.length >= 20) {
-                toast.error('Error: Maximum Goal Limit of 20 Reached');
-                throw new Error('You have reached the maximum limit of 20 goals.');
-            }
-
-            return await goalService.createGoal(goalData, token);
+            // Pass isPrivate from goalData to the createGoal function
+            return await goalService.createGoal({ ...goalData, isPrivate: goalData.isPrivate || false }, token);
         } catch (error) {
             const message =
                 (error.response &&
@@ -83,19 +74,20 @@ export const getGoals = createAsyncThunk(
     'goals/getAll',
     async (_, thunkAPI) => {
         try {
-            const token = thunkAPI.getState().auth.user.token
-            return await goalService.getGoals(token)
+            const token = thunkAPI.getState().auth.user.token;
+            const includePrivate = true; // Set to true to include private goals on the Dashboard
+            return await goalService.getGoals(token, includePrivate);
         } catch (error) {
             const message =
                 (error.response &&
                     error.response.data &&
                     error.response.data.message) ||
                 error.message ||
-                error.toString()
-            return thunkAPI.rejectWithValue(message)
+                error.toString();
+            return thunkAPI.rejectWithValue(message);
         }
     }
-)
+);
 
 // Delete user goal
 export const deleteGoal = createAsyncThunk(
@@ -133,17 +125,17 @@ export const goalSlice = createSlice({
         builder
             // createGoal
             .addCase(createGoal.pending, (state) => {
-                state.isLoading = true
+                state.isLoading = true;
             })
             .addCase(createGoal.fulfilled, (state, action) => {
-                state.isLoading = false
-                state.isSuccess = true
-                state.goals.push(action.payload)
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.goals.push(action.payload);
             })
             .addCase(createGoal.rejected, (state, action) => {
-                state.isLoading = false
-                state.isError = true
-                state.message = action.payload
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
             })
             // getGoals
             .addCase(getGoals.pending, (state) => {

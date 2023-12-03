@@ -28,6 +28,7 @@ function Search() {
     const [isLoading, setIsLoading] = useState(true);
     const [selectedSuperhero, setSelectedSuperhero] = useState(null);
     const [resultCount, setResultCount] = useState(5); // Default result count
+    const [publicGoals, setPublicGoals] = useState([]);
 
     const { user } = useSelector((state) => state.auth);
 
