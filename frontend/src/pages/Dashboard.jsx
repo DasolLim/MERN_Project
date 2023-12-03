@@ -1,5 +1,5 @@
 // useEffect is React hook used for side effects in functional componenets
-import { useEffect } from 'react'
+import React, { useEffect, useState } from 'react';
 // Provide the ability to navigate to different parts of your application
 import { useNavigate } from 'react-router-dom'
 // Allow extracting data from the Redux store state
@@ -10,6 +10,7 @@ import GoalForm from '../components/GoalForm'
 import GoalItem from '../components/GoalItem'
 import Spinner from '../components/Spinner'
 import { getGoals, reset } from '../features/goals/goalSlice'
+import { updateGoal } from '../features/goals/goalSlice';
 
 /*
 Functional components:
@@ -27,6 +28,11 @@ function Dashboard() {
     const { goals, isLoading, isError, message } = useSelector(
         (state) => state.goals
     )
+    const [editingGoal, setEditingGoal] = useState(null);
+
+    const handleEditGoal = (goal) => {
+        setEditingGoal(goal);
+    };
 
     // The useEffect hook is used to perform side effects in the component
     // Runs whenever the dependencies in the dependency array ([user, navigate, isError, message, dispatch]) change.
@@ -65,20 +71,32 @@ function Dashboard() {
                 <p>Goals Dashboard</p>
             </section>
 
-            <GoalForm />
+            {editingGoal ? (
+                <GoalForm
+                    initialData={editingGoal}
+                    onSubmit={(updatedData) => {
+                        dispatch(updateGoal(updatedData));
+                        setEditingGoal(null);
+                    }}
+                />
+            ) : (
+                <>
+                    <GoalForm />
+                </>
+            )}
 
-            <section className='content'>
+            < section className='content'>
                 {goals.length > 0 ? (
                     <div className='goals'>
                         {goals.map((goal) => (
                             // listing goals and its components
-                            <GoalItem key={goal._id} goal={goal} />
+                            <GoalItem key={goal._id} goal={goal} onEdit={handleEditGoal} />
                         ))}
                     </div>
                 ) : (
                     <h3>You have not set any goals</h3>
                 )}
-            </section>
+            </section >
         </>
     )
 }

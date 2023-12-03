@@ -38,6 +38,27 @@ export const getPublicGoals = createAsyncThunk(
     }
 );
 
+// Update user goal
+// Update user goal
+export const updateGoal = createAsyncThunk(
+    'goals/update',
+    async ({ goalId, updatedGoal }, thunkAPI) => {
+        try {
+            const token = thunkAPI.getState().auth.user.token;
+            const response = await goalService.updateGoal(goalId, updatedGoal, token);
+            return response;
+        } catch (error) {
+            const message =
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.message) ||
+                error.message ||
+                error.toString();
+            return thunkAPI.rejectWithValue(message);
+        }
+    }
+);
+
 // Create new goal
 // Async thunks are functiosn that dispatch actions at different lifecycle stages of 
 // an asynchronous operation (pending, fulfilled, rejected).
@@ -174,6 +195,28 @@ export const goalSlice = createSlice({
                 state.publicGoals = action.payload; // Update publicGoals state
             })
             .addCase(getPublicGoals.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+            .addCase(updateGoal.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(updateGoal.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+
+                // Find the index of the updated goal in the goals array
+                const updatedIndex = state.goals.findIndex(
+                    (goal) => goal._id === action.payload._id
+                );
+
+                if (updatedIndex !== -1) {
+                    // Update the goal in the array
+                    state.goals[updatedIndex] = action.payload;
+                }
+            })
+            .addCase(updateGoal.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;

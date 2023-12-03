@@ -1,8 +1,17 @@
 import { useDispatch } from 'react-redux'
 import { deleteGoal } from '../features/goals/goalSlice'
+import { useState } from 'react';
 
-function GoalItem({ goal }) {
+function GoalItem({ goal, onEdit }) {
     const dispatch = useDispatch()
+    const [isEditing, setIsEditing] = useState(false);
+
+    const handleEditClick = () => {
+        setIsEditing(true);
+        onEdit(goal);
+
+        console.log('Editing goal with ID:', goal._id)
+    };
 
     return (
         <div className='goal'>
@@ -12,6 +21,17 @@ function GoalItem({ goal }) {
             <button onClick={() => dispatch(deleteGoal(goal._id))} className='close'>
                 X
             </button>
+            <button
+                onClick={handleEditClick}
+                style={{
+                    display: 'block',
+                    margin: '15px auto 0',
+                }}
+                className='btn'
+            >
+                Edit
+            </button>
+
         </div>
     )
 }

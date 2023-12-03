@@ -82,12 +82,30 @@ const getPublicGoals = async () => {
     return response.data.filter(goal => !goal.isPrivate).sort((a, b) => b.lastModified - a.lastModified).slice(0, 10); // Filter out private goals and sort by last modified date
 }
 
+// Add the following function to update an existing goal
+const updateGoal = async (goalId, updatedGoal, token) => {
+    console.log('Token:', token);
+    console.log('Goal ID:', goalId);
+    console.log('Updated Goal:', updatedGoal);
+
+    const config = {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    }
+
+    const response = await axios.put(`${API_URL}${goalId}`, updatedGoal, config);
+
+    return response.data;
+}
+
 // Exporting three functions
 const goalService = {
     createGoal,
     getGoals,
     deleteGoal,
     getPublicGoals,
+    updateGoal,
 }
 
 export default goalService
