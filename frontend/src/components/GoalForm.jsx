@@ -4,7 +4,7 @@ import { createGoal } from '../features/goals/goalSlice';
 
 function GoalForm() {
     const [text, setText] = useState('');
-    const [isPrivate, setIsPrivate] = useState(false);
+    const [isPrivate, setIsPrivate] = useState(true);
     const [description, setDescription] = useState(''); // New state for description
 
     const dispatch = useDispatch();
