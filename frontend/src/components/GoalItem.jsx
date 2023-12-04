@@ -4,9 +4,11 @@ import { deleteGoal } from '../features/goals/goalSlice';
 
 function GoalItem({ goal, onEdit }) {
     const dispatch = useDispatch();
-    const [isEditing, setIsEditing] = useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
+    const [rating, setRating] = useState(0);
+    const [comment, setComment] = useState('');
+    const [isEditing, setIsEditing] = useState(false);
 
     const handleEditClick = () => {
         setIsEditing(true);
@@ -60,6 +62,32 @@ function GoalItem({ goal, onEdit }) {
                 <>
                     <h2>{goal.text}</h2>
                     <p>Description: {goal.description}</p>
+
+                    {/* Rating input */}
+                    <div className='form-group'>
+                        <label htmlFor='rating'>Rating</label>
+                        <input
+                            type='number'
+                            name='rating'
+                            id='rating'
+                            value={rating}
+                            onChange={(e) => setRating(parseInt(e.target.value, 10))}
+                            min="0"
+                            max="5"
+                        />
+                    </div>
+
+                    {/* Comment input */}
+                    <div className='form-group'>
+                        <label htmlFor='comment'>Comment</label>
+                        <textarea
+                            name='comment'
+                            id='comment'
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                        />
+                    </div>
+
                     <button onClick={handleDeleteClick} className='close'>
                         X
                     </button>

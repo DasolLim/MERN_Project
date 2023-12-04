@@ -8,6 +8,8 @@ function GoalForm({ initialData, onSubmit }) {
     const [isPrivate, setIsPrivate] = useState(initialData ? initialData.isPrivate : true);
     const [description, setDescription] = useState(initialData ? initialData.description : '');
     const [superheroIds, setSuperheroIds] = useState('');
+    const [rating, setRating] = useState(initialData ? initialData.rating : 0); // New state for rating
+    const [comment, setComment] = useState(initialData ? initialData.comment : ''); // New state for comment
     const [isEditing, setIsEditing] = useState(!!initialData);
     const dispatch = useDispatch();
 
@@ -28,19 +30,24 @@ function GoalForm({ initialData, onSubmit }) {
         // Trim any leading/trailing spaces in superheroIds
         const superheroIdArray = superheroIds.split(',').map(id => id.trim());
 
+        const reviewData = { rating, comment }; // New review data
+
         if (isEditing) {
-            // If editing, dispatch the updateGoal action
-            dispatch(updateGoal({ goalId: initialData._id, updatedGoal: { text, isPrivate, description, superheroIds } }));
+            // If editing, dispatch the updateGoal action with the updatedGoal and reviewData
+            dispatch(updateGoal({ goalId: initialData._id, updatedGoal: { text, isPrivate, description, superheroIds, ...reviewData } }));
         } else {
-            // If not editing, dispatch the createGoal action
-            dispatch(createGoal({ text, isPrivate, description, superheroIds: superheroIdArray }));
+            // If not editing, dispatch the createGoal action with the goalData and reviewData
+            dispatch(createGoal({ text, isPrivate, description, superheroIds: superheroIdArray, ...reviewData }));
         }
 
-        // Clear the form fields
+        // Clear the form fields including rating and comment
         setText('');
         setIsPrivate(true);
         setDescription('');
         setSuperheroIds('');
+        setRating(0);
+        setComment('');
+        setIsEditing(false);
     };
 
     return (
@@ -89,6 +96,33 @@ function GoalForm({ initialData, onSubmit }) {
                         onChange={(e) => setSuperheroIds(e.target.value)}
                     />
                 </div>
+
+                {isEditing && (
+                    <>
+                        <div className='form-group'>
+                            <label htmlFor='rating'>Rating</label>
+                            <input
+                                type='number'
+                                name='rating'
+                                id='rating'
+                                value={rating}
+                                onChange={(e) => setRating(parseInt(e.target.value, 10))}
+                                min="0"
+                                max="5"
+                            />
+                        </div>
+
+                        <div className='form-group'>
+                            <label htmlFor='comment'>Comment</label>
+                            <textarea
+                                name='comment'
+                                id='comment'
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
+                            />
+                        </div>
+                    </>
+                )}
 
                 <div className='form-group'>
                     {/* Conditionally render "Update Goal" or "Add Goal" button */}

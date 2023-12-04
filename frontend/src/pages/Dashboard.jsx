@@ -18,6 +18,9 @@ Simple javascript function
 Accepts the data in the form of props and returns the react elements
 */
 function Dashboard() {
+    const [rating, setRating] = useState(0); // Declare rating state
+    const [comment, setComment] = useState(''); // Declare comment state
+
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
@@ -32,6 +35,8 @@ function Dashboard() {
 
     const handleEditGoal = (goal) => {
         setEditingGoal(goal);
+        setRating(goal.rating || 0);
+        setComment(goal.comment || '');
     };
 
     // The useEffect hook is used to perform side effects in the component
@@ -75,9 +80,14 @@ function Dashboard() {
                 <GoalForm
                     initialData={editingGoal}
                     onSubmit={(updatedData) => {
-                        dispatch(updateGoal(updatedData));
+                        // Update rating and comment in the updatedData
+                        const dataWithReview = { ...updatedData, rating, comment };
+                        dispatch(updateGoal(dataWithReview));
                         setEditingGoal(null);
                     }}
+                    isEditing={true} // Pass isEditing prop to GoalForm
+                    rating={rating} // Pass rating prop to GoalForm
+                    comment={comment} // Pass comment prop to GoalForm
                 />
             ) : (
                 <>
