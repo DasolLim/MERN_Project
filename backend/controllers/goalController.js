@@ -124,30 +124,11 @@ const deleteGoal = asyncHandler(async (req, res) => {       // using express asy
     res.status(200).json({ id: req.params.id })
 })
 
-// UPDATE
-// @desc    Update goal visibility
-// @route   PUT /api/goals/:id/visibility
-// @access  Private (only accessible by admin)
-const updateGoalVisibility = asyncHandler(async (req, res) => {
-    const goal = await Goal.findById(req.params.id);
-
-    if (!goal) {
-        res.status(404).json({ error: 'Goal not found' });
-        return;
-    }
-
-    goal.isHidden = !goal.isHidden;
-    await goal.save();
-
-    res.status(200).json({ success: true, message: 'Goal visibility updated' });
-});
-
 // Exporting router handlers as an object
 module.exports = {
     getGoals,
     setGoal,
     updateGoal,
     deleteGoal,
-    getPublicGoals,
-    updateGoalVisibility
+    getPublicGoals
 }

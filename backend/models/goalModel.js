@@ -47,11 +47,6 @@ const goalSchema = mongoose.Schema(
             required: false,
             default: '',
         },
-        // for disabling users
-        isHidden: {
-            type: Boolean,
-            default: false,
-        },
     },
     {
         // Used to store the creation and last updated timestamps
