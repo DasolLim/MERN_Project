@@ -18,6 +18,7 @@ router.route('/').get(protect, getGoals).post(protect, setGoal)
 // since route for deleteGoal and updateGoal is the same
 router.route('/:id').delete(protect, deleteGoal).put(protect, updateGoal)
 
+// testing: /api/users/:id/grant-admin (grant admin privilege to other users)
 router.route('/public').get(getPublicGoals);
 
 module.exports = router
