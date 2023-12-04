@@ -60,6 +60,9 @@ const loginUser = asyncHandler(async (req, res) => {
             _id: user.id,
             name: user.name,
             email: user.email,
+            // checking is user is admin
+            // indicate is the user has admin privilege
+            isAdmin: user.isAdmin,
             token: generateToken(user._id),
         })
     } else {
@@ -75,6 +78,67 @@ const getMe = asyncHandler(async (req, res) => {
     res.status(200).json(req.user)
 })
 
+// @desc    Grant admin privilege to user
+// @route   POST /api/users/grant-admin/:id
+// @access  Private (only accessible by admin)
+// granting admin privilege to a user:
+const grantAdminPrivilege = asyncHandler(async (req, res) => {
+    // Ensure that the logged-in user is an admin
+    if (!req.user || !req.user.isAdmin) {
+        res.status(403);
+        throw new Error('Not authorized to grant admin privilege');
+    }
+
+    // Get user ID from request parameters
+    const userId = req.params.id;
+
+    // Find the user by ID
+    const user = await User.findById(userId);
+
+    if (!user) {
+        res.status(404);
+        throw new Error('User not found');
+    }
+
+    // Update the user's isAdmin field to true
+    user.isAdmin = true;
+    await user.save();
+
+    res.status(200).json({ success: true, message: 'Admin privilege granted' });
+});
+
+// @desc    Update user deactivation status
+// @route   PUT /api/users/:id/deactivate
+// @access  Private (only accessible by admin)
+const updateDeactivationStatus = asyncHandler(async (req, res) => {
+
+    // Ensure that the logged-in user is an admin
+    if (!req.user || !req.user.isAdmin) {
+        res.status(403);
+        throw new Error('Not authorized to update deactivation status');
+    }
+
+    // Get user ID from request parameters
+    const userId = req.params.id;
+
+    // Find the user by ID
+    const user = await User.findById(userId);
+
+    if (!user) {
+        res.status(404).json({ error: 'User not found' });
+        return;
+    }
+
+    user.isDeactivated = !user.isDeactivated;
+    await user.save();
+
+    res.status(200).json({
+        message: user.isDeactivated
+            ? 'User marked as deactivated'
+            : 'User marked as activated',
+    });
+});
+
 // Generate JWT
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -86,4 +150,6 @@ module.exports = {
     registerUser,
     loginUser,
     getMe,
+    grantAdminPrivilege,
+    updateDeactivationStatus,
 }
