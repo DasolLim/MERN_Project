@@ -14,6 +14,7 @@ const info = superheroInfoData;
 const powers = superheroPowersData;
 
 const Goal = require('./models/goalModel');
+const bcrypt = require('bcryptjs');
 
 // Connecting to MongoDB database
 connectDB();
@@ -21,6 +22,21 @@ connectDB();
 // Express is a web application framework for Node.js
 // Creating new application with defined routes to handle HTTP request and response
 const app = express();
+
+// Check if the admin user already exists
+const adminUser = await User.findOne({ email: 'admin@gmail.com' });
+
+if (!adminUser) {
+    // If the admin user doesn't exist, create it
+    const hashedPassword = await bcrypt.hash('admin', 10); // Replace 'adminPassword' with the desired initial password
+
+    await User.create({
+        name: 'admin',
+        email: 'admin@gmail.com',
+        password: hashedPassword,
+        isAdmin: true,
+    });
+}
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
