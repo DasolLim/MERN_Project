@@ -32,6 +32,12 @@ const goalSchema = mongoose.Schema(
             type: String,
             default: '',
         },
+        // retrieving superhero ids
+        // will be using these to search for superhero information
+        superheroIds: {
+            type: [String],
+            required: [true, 'Please add superhero ids'],
+        },
     },
     {
         // Used to store the creation and last updated timestamps

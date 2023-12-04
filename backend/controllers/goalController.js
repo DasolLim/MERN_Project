@@ -51,6 +51,8 @@ const setGoal = asyncHandler(async (req, res) => {      // using express async h
         isPrivate: req.body.isPrivate || false,
         // Use the description value from the request body or default to an empty string
         description: req.body.description, // Add this line to handle the description
+        // superheroIds list and retrieving its ids
+        superheroIds: req.body.superheroIds,
     });
 
     res.status(200).json(goal);

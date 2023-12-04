@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { deleteGoal } from '../features/goals/goalSlice';
 
@@ -6,6 +6,7 @@ function GoalItem({ goal, onEdit }) {
     const dispatch = useDispatch();
     const [isEditing, setIsEditing] = useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(false);
 
     const handleEditClick = () => {
         setIsEditing(true);
@@ -29,6 +30,10 @@ function GoalItem({ goal, onEdit }) {
         setShowConfirmation(false);
     };
 
+    const handleToggleExpand = () => {
+        setIsExpanded(!isExpanded); // Toggle the value
+    };
+
     const buttonContainerStyle = {
         display: 'flex',
         justifyContent: 'center',
@@ -40,7 +45,16 @@ function GoalItem({ goal, onEdit }) {
             <div>{new Date(goal.createdAt).toLocaleString('en-US')}</div>
             {isEditing ? (
                 <div>
-                    <button onClick={handleCancelEdit}>Cancel</button>
+                    <button
+                        onClick={handleEditClick}
+                        style={{
+                            display: 'block',
+                            margin: '10px auto 10px',
+                        }}
+                        className='btn'
+                    >
+                        Cancel
+                    </button>
                 </div>
             ) : (
                 <>
@@ -75,6 +89,30 @@ function GoalItem({ goal, onEdit }) {
                     </div>
                 </div>
             )}
+
+            {isExpanded && (
+                <div className="superhero-details">
+                    {/* Display superhero IDs from goal.superheroIds */}
+                    <div className='attribute'>
+                        <div className='attribute'>
+                            <p><strong>Superhero IDs:</strong> {goal.superheroIds.join(', ')} {goal.superheroIds.join(', ')}</p>
+                            <p><strong>Name: </strong> Abomination</p>
+                            <p><strong>Publisher: </strong> Dark Horse Comics</p>
+                            <p><strong>Powers: </strong>"Durability", "Cold Resistance","Energy Absorption","Super Strength",
+                                "Invulnerability","Elemental Transmogrification","Fire Resistance","Natural Armor"</p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <button onClick={handleToggleExpand}
+                style={{
+                    display: 'block',
+                    margin: '10px auto 10px',
+                }}
+                className='btn'>
+                {isExpanded ? 'Collapse' : 'Expand'}
+            </button>
         </div>
     );
 }
