@@ -21,6 +21,8 @@ function GoalForm({ initialData, onSubmit }) {
             setDescription(initialData.description);
             // Assuming you have a field in initialData that contains superhero IDs
             setSuperheroIds(initialData.superheroIds.join(', '));
+            setRating(0);
+            setComment('');
         }
     }, [initialData]);
 
@@ -30,14 +32,11 @@ function GoalForm({ initialData, onSubmit }) {
         // Trim any leading/trailing spaces in superheroIds
         const superheroIdArray = superheroIds.split(',').map(id => id.trim());
 
-        const reviewData = { rating, comment }; // New review data
-
         if (isEditing) {
-            // If editing, dispatch the updateGoal action with the updatedGoal and reviewData
-            dispatch(updateGoal({ goalId: initialData._id, updatedGoal: { text, isPrivate, description, superheroIds, ...reviewData } }));
+            dispatch(updateGoal({ goalId: initialData._id, updatedGoal: { text, isPrivate, description, superheroIds, rating, comment } }));
         } else {
-            // If not editing, dispatch the createGoal action with the goalData and reviewData
-            dispatch(createGoal({ text, isPrivate, description, superheroIds: superheroIdArray, ...reviewData }));
+            dispatch(createGoal({ text, isPrivate, description, superheroIds: superheroIdArray, rating, comment }));
+
         }
 
         // Clear the form fields including rating and comment

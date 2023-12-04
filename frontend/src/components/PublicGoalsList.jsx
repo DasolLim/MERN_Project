@@ -18,13 +18,15 @@ const PublicGoalsList = () => {
 
     return (
         <section>
+            <h2><strong>Public Goals</strong></h2>
             {publicGoals.map((goal) => (
                 <div key={goal._id} className="goal">
                     <div className='attribute'>
-                        <h2><strong>Public Goals</strong></h2>
-                        <p><strong>Name:</strong> {goal.text}</p>
-                        <p><strong>Description:</strong> {goal.description}</p>
+                        <h2>{goal.text}</h2>
                         <p><strong>Last Modified:</strong> {new Date(goal.lastModified).toLocaleString()}</p>
+                        <p><strong>Description:</strong> {goal.description}</p>
+                        <p><strong>Rating:</strong> {goal.rating}/5</p>
+                        <p><strong>Comment:</strong> {goal.comment}</p>
                     </div>
 
                     {expandedGoalId === goal._id && (

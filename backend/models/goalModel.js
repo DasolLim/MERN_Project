@@ -38,6 +38,15 @@ const goalSchema = mongoose.Schema(
             type: [String],
             required: [true, 'Please add superhero ids'],
         },
+        rating: {
+            type: Number,
+            required: false,
+        },
+        comment: {
+            type: String,
+            required: false,
+            default: '',
+        },
     },
     {
         // Used to store the creation and last updated timestamps

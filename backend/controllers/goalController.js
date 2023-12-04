@@ -29,6 +29,7 @@ const getGoals = asyncHandler(async (req, res) => {     // using express async h
     // Fetches goals associated with the authenticated user and sends them as a JSON response.
     const goals = await Goal.find({ user: req.user.id })
 
+
     res.status(200).json(goals)
 })
 
@@ -53,6 +54,8 @@ const setGoal = asyncHandler(async (req, res) => {      // using express async h
         description: req.body.description, // Add this line to handle the description
         // superheroIds list and retrieving its ids
         superheroIds: req.body.superheroIds,
+        rating: req.body.rating,
+        comment: req.body.comment,
     });
 
     res.status(200).json(goal);
