@@ -19,24 +19,12 @@ const protect = asyncHandler(async (req, res, next) => {
             // Get user from the token
             req.user = await User.findById(decoded.id).select('-password')
 
-            // Check for deactivation status
-            if (req.user.isDeactivated) {
-                res.status(401);
-                throw new Error('Account is deactivated. Contact support for assistance.');
-            }
-
             next()
         } catch (error) {
             console.log(error)
             res.status(401)
             throw new Error('Not authorized')
         }
-    }
-
-    // checking if user is admin or not
-    if (!req.user.isAdmin) {
-        res.status(401);
-        throw new Error('Not authorized');
     }
 
     if (!token) {
