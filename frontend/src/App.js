@@ -12,6 +12,9 @@ import Dashboard from './pages/Dashboard'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Admin from './pages/Admin';
+import PrivacyPolicy from './copyright/PrivacyPolicy';
+import AUP from './copyright/AUP';
+import DMCANotice from './copyright/DMCANotice';
 
 // App is the functional component in react
 function App() {
@@ -27,6 +30,9 @@ function App() {
           <Routes>
             {/* Set the default route to Main */}
             <Route path='/' element={<Home />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/AUP" element={<AUP />} />
+            <Route path="/DMCA" element={<DMCANotice />} />
             <Route path='/search' element={<Search />} />
             <Route path='/dashboard' element={<Dashboard />} />
             <Route path='/login' element={<Login />} />

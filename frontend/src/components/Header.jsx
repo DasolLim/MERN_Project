@@ -4,6 +4,9 @@ import { faHome } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { logout, reset } from '../features/auth/authSlice'
+import { FaShieldAlt } from 'react-icons/fa';
+import { FaRegThumbsUp } from 'react-icons/fa';
+import { FaExclamationTriangle } from 'react-icons/fa';
 
 function Header() {
     const navigate = useNavigate()
@@ -56,6 +59,21 @@ function Header() {
                         <li>
                             <Link to='/'>
                                 <FontAwesomeIcon icon={faHome} /> Home
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to='/privacy-policy'>
+                                <FaShieldAlt /> Privacy Policy
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to='/AUP'>
+                                <FaRegThumbsUp /> AUP
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to='/DMCA'>
+                                <FaExclamationTriangle /> DMCA
                             </Link>
                         </li>
                     </>
