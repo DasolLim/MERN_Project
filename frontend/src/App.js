@@ -1,5 +1,6 @@
 // Used for handling routing in a React application
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { useSelector } from 'react-redux';
 // Simple way to toast notification in a React app
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
@@ -10,9 +11,13 @@ import Search from './pages/Search'
 import Dashboard from './pages/Dashboard'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import Admin from './pages/Admin';
 
 // App is the functional component in react
 function App() {
+
+  const { user } = useSelector((state) => state.auth);
+
   return (
     <>
       <Router>
@@ -26,6 +31,7 @@ function App() {
             <Route path='/dashboard' element={<Dashboard />} />
             <Route path='/login' element={<Login />} />
             <Route path='/register' element={<Register />} />
+            <Route path='/admin' element={<Admin />} />
           </Routes>
         </div>
       </Router>
