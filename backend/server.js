@@ -144,6 +144,169 @@ app.get('/api/search', (req, res) => {
     }
 });
 
+// Item 5: Create a new list to save a list of superheroes with a given list name. Return an error if the name exists.
+// Create a new list with a given name
+app.post('/api/createList', express.json(), (req, res) => {
+    const { name } = req.body;
+
+    if (!name) {
+        return res.status(400).json({ error: 'Name is required for creating a list.' });
+    }
+
+    if (createdLists.some((list) => list.name === name)) {
+        return res.status(400).json({ error: 'List with the same name already exists.' });
+    }
+
+    const newList = {
+        name,
+        superheroes: [],
+    };
+
+    createdLists.push(newList);
+
+    // Save the updated lists to lists.json
+    fs.writeFile('lists.json', JSON.stringify(createdLists), 'utf-8', (err) => {
+        if (err) {
+            console.error('Error saving lists:', err);
+            return res.status(500).json({ error: 'Failed to save the list.' });
+        }
+        res.status(200).json({ message: 'List created successfully.', lists: createdLists });
+    });
+
+    // Save the updated lists to lists.json
+    saveListsToFile();
+});
+
+// New route to get the lists
+app.get('/api/lists', (req, res) => {
+    res.json(createdLists);
+});
+
+// Item 6: Save a list of superhero IDs to a given list name.
+app.put('/api/saveList', express.json(), (req, res) => {
+    const { name, superheroIDs } = req.body;
+
+    if (!name || !superheroIDs) {
+        return res.status(400).json({ error: 'Both list name and superhero IDs are required for saving a list.' });
+    }
+
+    // Check if the list name exists in the 'lists.json' file
+    const existingList = createdLists.find((list) => list.name === name);
+
+    if (!existingList) {
+        return res.status(404).json({ error: 'List with the specified name does not exist.' });
+    }
+
+    // Parse the superhero IDs input as a comma-separated string and split into an array
+    const superheroIDsArray = superheroIDs.split(',').map((id) => parseInt(id.trim(), 10));
+
+    // Update the superhero IDs in the existing list
+    existingList.superheroes = superheroIDsArray;
+
+    // Save the updated lists to 'lists.json'
+    saveListsToFile();
+
+    // Notify the client that the list was successfully updated
+    res.json({ message: 'List updated successfully.', lists: createdLists });
+
+    // Check if the list name exists and show an alert if it does
+    if (existingList) {
+        alert(`The list name "${name}" exists.`);
+    }
+});
+
+// Save the updated lists to lists.json
+function saveListsToFile() {
+    fs.writeFile(listsFilePath, JSON.stringify(createdLists, null, 4), 'utf-8', (err) => {
+        if (err) {
+            console.error('Error saving lists:', err);
+        }
+    });
+}
+
+// Item 7: Get the list of superhero IDs for a given list
+// Get the list of superhero IDs for a given list
+app.get('/api/getList', (req, res) => {
+    const listName = req.query.name; // Get the list name from the query parameters
+
+    if (!listName) {
+        return res.status(400).json({ error: 'List name is required.' });
+    }
+
+    // Find the list by name
+    const existingList = createdLists.find((list) => list.name === listName);
+
+    if (!existingList) {
+        return res.status(404).json({ error: 'List with the specified name does not exist.' });
+    }
+
+    // Return the list of superhero IDs for the specified list
+    res.json({ listName: existingList.name, superheroIDs: existingList.superheroes });
+});
+
+// Item 8: Delete a list of superheroes with a given name. Return an error if the given list doesn’t exist
+// Delete a list of superheroes with a given name
+app.delete('/api/deleteList', express.json(), (req, res) => {
+    const { name } = req.body; // Get the list name from the request body
+
+    if (!name) {
+        return res.status(400).json({ error: 'List name is required.' });
+    }
+
+    // Find the index of the list by name
+    const listIndex = createdLists.findIndex((list) => list.name === name);
+
+    if (listIndex === -1) {
+        return res.status(404).json({ error: 'List with the specified name does not exist.' });
+    }
+
+    // Delete the list from the createdLists array
+    createdLists.splice(listIndex, 1);
+
+    res.json({ message: 'List deleted successfully.' });
+
+    // Save the updated lists to lists.json
+    saveListsToFile();
+});
+
+// Item 9: Get a list of names, information and powers of all superheroes saved in a given list
+// Get information and powers of all superheroes saved in a given list
+app.get('/api/getListInfo', (req, res) => {
+    const listName = req.query.name; // Get the list name from the query parameters
+
+    if (!listName) {
+        return res.status(400).json({ error: 'List name is required.' });
+    }
+
+    // Find the list by name
+    const existingList = createdLists.find((list) => list.name === listName);
+
+    if (!existingList) {
+        return res.status(404).json({ error: 'List with the specified name does not exist.' });
+    }
+
+    const superheroInfo = existingList.superheroes.map((superheroID) => {
+        const superhero = info.find((hero) => hero.id === superheroID);
+        if (superhero) {
+            const powersData = powers[superheroID - 1]; // Adjust for 0-based index
+            if (!powersData) {
+                return {
+                    ...superhero,
+                    powers: [],
+                };
+            }
+            // Remove the 'hero_names' property from the powers object
+            delete powersData.hero_names;
+            return {
+                ...superhero,
+                powers: powersData,
+            };
+        }
+    });
+
+    res.json(superheroInfo);
+});
+
 // Serve frontend
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, '../frontend/build')));
