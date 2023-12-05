@@ -47,6 +47,10 @@ const goalSchema = mongoose.Schema(
             required: false,
             default: '',
         },
+        isVisible: {
+            type: Boolean,
+            default: true,
+        },
     },
     {
         // Used to store the creation and last updated timestamps

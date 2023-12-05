@@ -7,6 +7,56 @@ const asyncHandler = require('express-async-handler')
 const Goal = require('../models/goalModel')
 const User = require('../models/userModel')
 
+const hideReview = asyncHandler(async (req, res) => {
+    const { reviewId } = req.params;
+
+    // Check if the logged-in user is an admin
+    if (!req.user.isAdmin) {
+        res.status(403).json({ error: 'Unauthorized. Admin privileges required.' });
+        return;
+    }
+
+    const review = await Goal.findByIdAndUpdate(reviewId, { isVisible: false }, { new: true });
+
+    if (!review) {
+        res.status(404).json({ error: 'Review not found' });
+        return;
+    }
+
+    res.status(200).json({ message: 'Review marked as hidden successfully', review });
+});
+
+const restoreVisibility = asyncHandler(async (req, res) => {
+    const { reviewId } = req.params;
+
+    // Check if the logged-in user is an admin
+    if (!req.user.isAdmin) {
+        res.status(403).json({ error: 'Unauthorized. Admin privileges required.' });
+        return;
+    }
+
+    const review = await Goal.findByIdAndUpdate(reviewId, { isVisible: true }, { new: true });
+
+    if (!review) {
+        res.status(404).json({ error: 'Review not found' });
+        return;
+    }
+
+    res.status(200).json({ message: 'Review visibility restored successfully', review });
+});
+
+const getHiddenReviews = asyncHandler(async (req, res) => {
+    // Check if the logged-in user is an admin
+    if (!req.user.isAdmin) {
+        res.status(403).json({ error: 'Unauthorized. Admin privileges required.' });
+        return;
+    }
+
+    const hiddenReviews = await Goal.find({ isVisible: false });
+
+    res.status(200).json(hiddenReviews);
+});
+
 const getPublicGoals = asyncHandler(async (req, res) => {
     try {
         // Retrieve up to 10 public goals ordered by last-modified date
@@ -130,5 +180,8 @@ module.exports = {
     setGoal,
     updateGoal,
     deleteGoal,
-    getPublicGoals
+    getPublicGoals,
+    hideReview,
+    restoreVisibility,
+    getHiddenReviews,
 }
