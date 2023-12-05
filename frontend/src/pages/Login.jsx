@@ -59,7 +59,17 @@ function Login() {
 
         try {
             await dispatch(login(userData));
-            navigate('/dashboard');
+
+            console.log(userData);
+
+            // Check if the logged-in user is an admin
+            if (userData.email === "admin@admin.com") {
+                // Redirect to the Admin page
+                navigate('/admin');
+            } else {
+                // Redirect to the user's dashboard
+                navigate('/dashboard');
+            }
         } catch (error) {
             console.error('Login Error:', error);
         }
