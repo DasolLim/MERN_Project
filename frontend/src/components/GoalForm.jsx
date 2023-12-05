@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { createGoal, updateGoal } from '../features/goals/goalSlice';
 import { getSuperheroById } from '../features/search/searchService';
+import { toast } from 'react-toastify'
 
 function GoalForm({ initialData, onSubmit }) {
     const [text, setText] = useState(initialData ? initialData.text : '');
@@ -32,11 +33,20 @@ function GoalForm({ initialData, onSubmit }) {
         // Trim any leading/trailing spaces in superheroIds
         const superheroIdArray = superheroIds.split(',').map(id => id.trim());
 
+        // Validate superheroIds
+        const isValidSuperheroIds = superheroIdArray.every(id => /^\d+$/.test(id));
+
+        if (!isValidSuperheroIds) {
+            // Show error toast
+            // You can replace this with your preferred toast notification method
+            toast.error('Please input valid Superhero IDs (comma-separated numbers)');
+            return; // Do not proceed with dispatching the action if validation fails
+        }
+
         if (isEditing) {
             dispatch(updateGoal({ goalId: initialData._id, updatedGoal: { text, isPrivate, description, superheroIds, rating, comment } }));
         } else {
             dispatch(createGoal({ text, isPrivate, description, superheroIds: superheroIdArray, rating, comment }));
-
         }
 
         // Clear the form fields including rating and comment
@@ -48,6 +58,7 @@ function GoalForm({ initialData, onSubmit }) {
         setComment('');
         setIsEditing(false);
     };
+
 
     return (
         <section className='form'>
