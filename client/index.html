@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>My Superhero App</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Superhero Information</h1>
+
+        <!-- Search Form -->
+        <form id="search-form">
+        <input type="text" id="search-input" placeholder="Search...">
+        <select id="search-type">
+            <option value="name">Name</option>
+            <option value="race">Race</option>
+            <option value="publisher">Publisher</option>
+            <option value="power">Power</option>
+        </select>
+        <button type="submit">Search</button>
+        </form>
+
+        <div id="search-results">
+            <!-- Display search results here -->
+        </div>
+        
+        <!-- Create Favorite List Form -->
+        <form id="createListForm" class="form">
+            <input type="text" id="listNameInput" placeholder="Enter list name">
+            <button type="submit" id="createListButton">Create List</button>
+        </form>
+
+        <!-- Display Error Messages for List Creation -->
+        <div id="listError" class="error"></div>
+
+        <!-- Add this inside the <div class="container"> -->
+        <!-- Form to Save Superhero IDs to a List -->
+        <!-- Form to Save Superhero IDs to a List -->
+        <form id="saveListForm" class="form">
+            <select id="listsDropdownForSave" required>
+                <option value="" disabled>Select a List</option>
+                <!-- Add dynamically populated options for lists here -->
+            </select>
+            <input type="text" id="superheroIDsInput" placeholder="Enter Superhero IDs" required>
+            <button type="submit" id="saveListButton">Save List</button>
+        </form>
+   
+        <!-- Add this select element to choose a list -->
+        <select id="listsDropdownForGetSuperheroIDs" required>
+            <option value="" disabled>Select a List</option>
+            <!-- Add dynamically populated options for lists here -->
+        </select>
+
+        <!-- Add a button to fetch superhero IDs for the selected list -->
+        <button id="fetchSuperheroIDsButton">Get Superhero IDs</button>
+
+        <div id="superheroIDsContainer" class="result"></div>
+
+        <div id="saveListError" class="error"></div>         
+        
+        <label for="sort-select">Sort by:</label>
+        <select id="sort-select">
+            <option value="name">Name</option>
+            <option value="race">Race</option>
+            <option value="publisher">Publisher</option>
+        </select>
+        <button id="sort-button">Sort</button>        
+
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
