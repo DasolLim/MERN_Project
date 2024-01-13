@@ -2,17 +2,11 @@ import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-// Icon component that represents a user icon from a library
 import { FaUser } from 'react-icons/fa'
 import { register, reset } from '../features/auth/authSlice'
 import Spinner from '../components/Spinner'
 
 function Register() {
-    /*
-    The component uses the useState hook to manage form data. 
-    The formData state holds the values for the name, email, password, and password2 fields.
-    These values are extracted from the formData state for convenience.
-    */
     const [formData, setFormData] = useState({
         name: '',
         email: '',
