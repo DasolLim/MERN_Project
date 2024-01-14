@@ -18,7 +18,7 @@ const PublicGoalsList = () => {
 
     return (
         <section>
-            <h2><strong>Public Goals</strong></h2>
+            <h2><strong>Public Lists</strong></h2>
             {publicGoals.map((goal) => (
                 <div key={goal._id} className="goal">
                     <div className='attribute'>

@@ -64,7 +64,7 @@ function GoalForm({ initialData, onSubmit }) {
         <section className='form'>
             <form onSubmit={handleSubmit}>
                 <div className='form-group'>
-                    <label htmlFor='isPrivate'>Private Goal</label>
+                    <label htmlFor='isPrivate'>Private List</label>
                     <input
                         type='checkbox'
                         name='isPrivate'
@@ -75,7 +75,7 @@ function GoalForm({ initialData, onSubmit }) {
                 </div>
 
                 <div className='form-group'>
-                    <label htmlFor='text'>Goal</label>
+                    <label htmlFor='text'>List</label>
                     <input
                         type='text'
                         name='text'

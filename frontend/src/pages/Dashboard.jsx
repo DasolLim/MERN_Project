@@ -72,7 +72,7 @@ function Dashboard() {
             <section className='heading'>
                 {/* Display welcome message with a specific user */}
                 <h1>Welcome {user && user.name}</h1>
-                <p>Goals Dashboard</p>
+                <p>Lists Dashboard</p>
             </section>
 
             {editingGoal ? (
@@ -103,7 +103,7 @@ function Dashboard() {
                         ))}
                     </div>
                 ) : (
-                    <h3>You have not set any goals</h3>
+                    <h3>You have not set any lists</h3>
                 )}
             </section >
         </>

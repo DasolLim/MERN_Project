@@ -45,7 +45,7 @@ function Admin() {
         <div>
             <h1><strong>Admin Dashboard</strong></h1>
             <div>
-                <h2>Manage User Ids</h2>
+                <h2>Manage User IDs</h2>
                 {publicGoals.map((goal) => (
                     <div key={goal._id} className="goal">
                         <div className='attribute'>
@@ -64,7 +64,7 @@ function Admin() {
             </div>
 
             <section>
-                <h2>Manage Users Goals</h2>
+                <h2>Manage User Lists</h2>
                 {publicGoals.map((goal) => (
                     <div key={goal._id} className="goal">
                         <div className='attribute'>

@@ -70,7 +70,7 @@ function Search() {
         <>
             <section className='heading'>
                 <h1>Welcome {user && user.name}</h1>
-                <p>Superhero Information</p>
+                <p>Search Superhero Information</p>
             </section>
 
             <div className='form-group'>

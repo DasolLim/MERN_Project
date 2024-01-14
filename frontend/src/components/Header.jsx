@@ -23,7 +23,7 @@ function Header() {
         <header className='header'>
             <div className='logo'>
                 {/* <Link to='/dashboard'>GoalSetter</Link> */}
-                GoalSetter
+                MERN Stack Project
             </div>
             <ul>
                 {user ? (
@@ -47,16 +47,6 @@ function Header() {
                 ) : (
                     <>
                         <li>
-                            <Link to='/login'>
-                                <FaSignInAlt /> Login
-                            </Link>
-                        </li>
-                        <li>
-                            <Link to='/register'>
-                                <FaUser /> Register
-                            </Link>
-                        </li>
-                        <li>
                             <Link to='/'>
                                 <FontAwesomeIcon icon={faHome} /> Home
                             </Link>
@@ -74,6 +64,16 @@ function Header() {
                         <li>
                             <Link to='/DMCA'>
                                 <FaExclamationTriangle /> DMCA
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to='/register'>
+                                <FaUser /> Register
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to='/login'>
+                                <FaSignInAlt /> Login
                             </Link>
                         </li>
                     </>

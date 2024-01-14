@@ -1,14 +1,18 @@
 import React from 'react';
+// import myImage from 'MERN-Project/frontend/src/pages/homePagePicture.png'; // Import the image
 
 const Home = () => {
     return (
         <div className="home">
             <header>
-                <h1>WELCOME TO SE3316 LAB 4</h1>
-                <p>Explore, Discover, Enjoy</p>
+                <h1>MERN Stack Project</h1>
+                <p>MongoDB, Express. js, React, and Node. js</p>
             </header>
             <main>
                 <section>
+                    <div>
+                        {/* <img src={myImage} alt="Description of the image" /> */}
+                    </div>
                     <h2>Description</h2>
                     <p>
                         The website is an advanced platform designed for the comprehensive management of heroes,
