@@ -27,6 +27,7 @@
 - DMCA notice & takedown policy (keep it accessible).
 - Tools for the admin to handle copyright disputes like a superhero.
 
+## Website Display:
 Hey there! Here's the quick visual display of my Fullstack Website Project!
 
 ### Home Page:
