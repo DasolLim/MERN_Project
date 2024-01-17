@@ -3,9 +3,8 @@
 Hey there! Here's the quick visual display of my Fullstack Website Project!
 
 ### Home Page
-![MERN1](https://github.com/DasolLim/MERN-Project/assets/92288227/3209801c-6e7b-4bd3-b424-1f7d9c3fc8b7)
-
 *User home page (default page)*
+![MERN1](https://github.com/DasolLim/MERN-Project/assets/92288227/3209801c-6e7b-4bd3-b424-1f7d9c3fc8b7)
 
 ### User Dashboard
 ![MERN4](https://github.com/DasolLim/MERN-Project/assets/92288227/cb8761cc-cdf2-48b9-83f0-7c604d239879)
