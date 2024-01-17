@@ -1,6 +1,6 @@
 # Fullstack (MERN Stack) Website Development
 
-Hey there! Here's the quick visual display of my Fullstack Website Project 🚀
+Hey there! Here's the quick visual display of my Fullstack Website Project!
 
 ### Home Page
 ![MERN1](https://github.com/DasolLim/MERN-Project/assets/92288227/3209801c-6e7b-4bd3-b424-1f7d9c3fc8b7)
