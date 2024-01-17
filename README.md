@@ -54,7 +54,7 @@ Hey there! Here's the quick visual display of my Fullstack Website Project!
 *Admin has ability to disable/enable users and delete all lists created by all users*
 ![MERN8](https://github.com/DasolLim/MERN-Project/assets/92288227/5d3ba4c8-8cc7-469b-a1bc-c0fd26bfc62b)
 
-# Deploying My Website on AWS: A Step-by-Step Adventure
+# Deploying My Website on AWS: A Step-by-Step
 Greetings, fellow engineering pals! 👋 As a third-year student navigating the AWS landscape, let me share my journey on uploading my website to an AWS server. Here's a chill summary:
 
 ## One-time Setup:
