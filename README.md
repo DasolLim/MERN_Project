@@ -95,4 +95,3 @@ Greetings, fellow engineering pals! 👋 As a third-year student navigating the 
 2. Switched "root /usr/share/nginx/html;" to "root /var/www/webtech/html;".
 3. Saved, crafted necessary folders.
 4. Checked permissions, poured in my HTML, and hit Nginx with a restart.
-
