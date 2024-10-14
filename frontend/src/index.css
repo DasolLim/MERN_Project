@@ -191,6 +191,23 @@ h3 {
   animation: spin 1.2s linear infinite;
 }
 
+.image-container img {
+  width: 100%;
+  height: auto;
+}
+
+#home-header {
+  margin-top: 20px;
+}
+
+.featured-container {
+  text-align: left;
+}
+
+.footer-container {
+  margin-top: 20px;
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);
